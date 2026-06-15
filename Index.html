@@ -3,354 +3,479 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Advanced Club Management System</title>
-    <!-- Tailwind CSS -->
+    <title>Smart Club Management | Premium Edition</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Mukta:wght@400;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Mukta:wght@400;500;600;700;800&display=swap');
         
-        body { font-family: 'Mukta', 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { 
+            font-family: 'Mukta', sans-serif; 
+            -webkit-tap-highlight-color: transparent; 
+            background-color: #f3f4f6;
+        }
+        
+        /* Premium Scrollbar Hiding */
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
-        /* Premium Animations */
+        /* Smooth Animations */
         .modal-enter { animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-        .fade-in { animation: fadeIn 0.5s ease-out forwards; }
-        .list-enter { animation: slideInRight 0.3s ease-out forwards; opacity: 0; }
+        .fade-in { animation: fadeIn 0.4s ease-out forwards; }
         
-        @keyframes slideUp { from { opacity: 0; transform: translateY(50px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes slideInRight { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes slideUp { 
+            from { opacity: 0; transform: translateY(100px) scale(0.95); } 
+            to { opacity: 1; transform: translateY(0) scale(1); } 
+        }
         
-        /* Toast Notifications */
-        .toast { transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55); transform: translateY(-100%); opacity: 0; }
-        .toast.show { transform: translateY(0); opacity: 1; }
+        @keyframes fadeIn { 
+            from { opacity: 0; transform: translateY(10px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
         
-        /* Glassmorphism */
-        .glass-bg { background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(5px); }
-        .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
+        /* Toast Notification */
+        .toast { 
+            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55); 
+            transform: translateY(-150%); 
+            opacity: 0; 
+        }
+        .toast.show { 
+            transform: translateY(0); 
+            opacity: 1; 
+        }
+        
+        /* Premium Glassmorphism */
+        .glass-modal { 
+            background: rgba(0, 0, 0, 0.4); 
+            backdrop-filter: blur(8px); 
+            -webkit-backdrop-filter: blur(8px); 
+        }
+        
+        .glass-nav { 
+            background: rgba(255, 255, 255, 0.9); 
+            backdrop-filter: blur(10px); 
+            border-top: 1px solid rgba(255,255,255,0.5); 
+        }
+        
+        /* Chat Bubbles */
+        .chat-bubble-me { 
+            border-radius: 20px 20px 4px 20px; 
+            background: linear-gradient(135deg, #4f46e5, #6366f1); 
+            color: white; 
+            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.2); 
+        }
+        
+        .chat-bubble-other { 
+            border-radius: 20px 20px 20px 4px; 
+            background: #ffffff; 
+            color: #1e293b; 
+            border: 1px solid #e2e8f0; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.02); 
+        }
+
+        /* Custom Input focus */
+        input:focus, textarea:focus, select:focus { 
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1); 
+        }
     </style>
 </head>
-<body class="bg-slate-100 flex justify-center h-[100dvh] overflow-hidden text-slate-800">
+<body class="flex justify-center h-[100dvh] overflow-hidden text-slate-800">
 
-    <!-- System Toast Notifications -->
-    <div id="toast-container" class="fixed top-safe pt-4 left-1/2 transform -translate-x-1/2 z-[100] flex flex-col gap-2 w-11/12 max-w-sm pointer-events-none"></div>
+    <!-- Global Toast Container -->
+    <div id="toast-container" class="fixed top-safe pt-6 left-1/2 transform -translate-x-1/2 z-[100] flex flex-col gap-3 w-11/12 max-w-md pointer-events-none"></div>
 
+    <!-- MAIN APP WRAPPER -->
     <div class="w-full max-w-md bg-slate-50 h-full relative flex flex-col shadow-2xl overflow-hidden sm:border-x sm:border-slate-200">
 
-        <!-- ==================== 1. LOGIN VIEW ==================== -->
-        <div id="login-view" class="absolute inset-0 bg-white z-50 flex flex-col justify-center px-8 transition-opacity duration-700">
-            <div class="text-center mb-10 fade-in">
-                <div class="w-28 h-28 bg-gradient-to-tr from-blue-600 via-indigo-600 to-purple-600 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-[0_10px_30px_rgba(79,70,229,0.3)] transform rotate-3 hover:rotate-0 transition-transform duration-300">
-                    <i class="fa-solid fa-users-viewfinder text-white text-5xl -rotate-3"></i>
+        <!-- ==================== LOGIN VIEW ==================== -->
+        <div id="login-view" class="absolute inset-0 bg-white z-50 flex flex-col justify-center px-8 transition-opacity duration-500 overflow-hidden">
+            <div class="absolute top-[-10%] left-[-10%] w-64 h-64 bg-indigo-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20"></div>
+            <div class="absolute bottom-[-10%] right-[-10%] w-64 h-64 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20"></div>
+            
+            <div class="relative z-10 text-center mb-10 fade-in">
+                <div class="w-28 h-28 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-2xl shadow-indigo-500/30 transform -rotate-3 transition-transform hover:rotate-0">
+                    <i class="fa-solid fa-gem text-white text-5xl"></i>
                 </div>
-                <h1 class="text-4xl font-extrabold text-slate-900 tracking-tight">क्लब प्रणाली</h1>
-                <p class="text-sm text-slate-500 mt-2 font-medium">डिजिटल व्यवस्थापनमा स्वागत छ</p>
+                <h1 class="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-700 to-purple-700">स्मार्ट क्लब</h1>
+                <p class="text-slate-500 font-semibold mt-2">प्रिमियम व्यवस्थापन प्रणाली</p>
             </div>
             
-            <div class="space-y-5 fade-in" style="animation-delay: 0.2s;">
-                <div>
-                    <label class="block text-sm font-bold text-slate-700 mb-1.5">तपाईंको पूरा नाम</label>
-                    <div class="relative">
-                        <i class="fa-regular fa-user absolute left-4 top-3.5 text-slate-400"></i>
-                        <input type="text" id="auth-name" placeholder="नाम प्रविष्ट गर्नुहोस्" class="w-full pl-11 pr-4 py-3.5 bg-slate-50 rounded-xl border border-slate-200 focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all font-medium text-slate-800">
-                    </div>
+            <div class="relative z-10 space-y-5 fade-in" style="animation-delay: 0.1s;">
+                <div class="relative">
+                    <i class="fa-solid fa-user absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400"></i>
+                    <input type="text" id="auth-name" placeholder="तपाईँको पूरा नाम" class="w-full pl-12 pr-4 py-4 bg-white rounded-2xl border border-slate-200 focus:border-indigo-500 outline-none font-bold text-slate-700 shadow-sm transition-all">
                 </div>
-                <div>
-                    <label class="block text-sm font-bold text-slate-700 mb-1.5">इनभाइट कोड (Invite Code)</label>
-                    <div class="relative">
-                        <i class="fa-solid fa-key absolute left-4 top-3.5 text-slate-400"></i>
-                        <input type="text" id="auth-code" placeholder="कोड हाल्नुहोस्" class="w-full pl-11 pr-4 py-3.5 bg-slate-50 rounded-xl border border-slate-200 focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none uppercase transition-all font-mono tracking-[0.2em] font-bold text-slate-800">
-                    </div>
+                <div class="relative">
+                    <i class="fa-solid fa-key absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400"></i>
+                    <input type="text" id="auth-code" placeholder="इनभाइट कोड (Invite Code)" class="w-full pl-12 pr-4 py-4 bg-white rounded-2xl border border-slate-200 focus:border-indigo-500 outline-none font-bold text-slate-700 uppercase tracking-widest shadow-sm transition-all">
                 </div>
-                <button id="login-btn" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-4 rounded-xl shadow-[0_8px_20px_rgba(79,70,229,0.3)] transition-all active:scale-[0.98] flex justify-center items-center gap-2 mt-4 text-lg">
-                    <span>प्रवेश गर्नुहोस्</span>
-                    <i class="fa-solid fa-arrow-right-to-bracket"></i>
+                <button id="login-btn" class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold text-lg py-4 rounded-2xl shadow-xl shadow-indigo-500/30 active:scale-95 transition-all mt-4">
+                    प्रवेश गर्नुहोस् <i class="fa-solid fa-arrow-right-to-bracket ml-2"></i>
                 </button>
             </div>
         </div>
 
-        <!-- ==================== 2. MAIN APP VIEW ==================== -->
-        <div id="app-view" class="hidden flex-col h-full relative">
+        <!-- ==================== MAIN APP VIEW ==================== -->
+        <div id="app-view" class="hidden flex-col h-full relative bg-slate-50">
             
-            <!-- Dynamic Header -->
-            <header class="glass-card px-5 py-4 flex justify-between items-center shadow-sm border-b border-slate-100 z-20 shrink-0 sticky top-0">
+            <header class="bg-white/90 backdrop-blur-md px-5 py-4 flex justify-between items-center shadow-sm border-b border-slate-200 z-20 shrink-0 sticky top-0">
                 <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 bg-indigo-100 text-indigo-600 rounded-lg flex justify-center items-center"><i id="header-icon" class="fa-solid fa-bullhorn"></i></div>
-                    <h1 id="app-header-title" class="text-xl font-extrabold text-slate-800 tracking-tight">सूचना पाटी</h1>
+                    <button id="back-btn" class="hidden w-10 h-10 bg-slate-100 rounded-xl flex justify-center items-center mr-1 text-slate-700 active:scale-90 transition-transform">
+                        <i class="fa-solid fa-chevron-left"></i>
+                    </button>
+                    <div id="header-icon-box" class="w-10 h-10 bg-gradient-to-br from-indigo-100 to-purple-100 text-indigo-600 rounded-xl flex justify-center items-center shadow-inner">
+                        <i id="header-icon" class="fa-solid fa-bullhorn text-lg"></i>
+                    </div>
+                    <h1 id="app-header-title" class="text-2xl font-extrabold text-slate-800 tracking-tight">सूचना पाटी</h1>
                 </div>
-                <div class="flex items-center gap-2 bg-slate-100 border border-slate-200 px-3 py-1.5 rounded-full shadow-inner">
-                    <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-                    <span id="user-badge" class="text-xs font-bold text-slate-700 uppercase tracking-wider"></span>
+                <div class="bg-indigo-50 px-3 py-1.5 rounded-full border border-indigo-100 shadow-sm">
+                    <span id="user-badge" class="text-[11px] font-extrabold text-indigo-700 uppercase tracking-wider"></span>
                 </div>
             </header>
 
-            <!-- Main Scrollable Content -->
-            <main class="flex-1 overflow-y-auto no-scrollbar pb-28 relative" id="main-content">
+            <main class="flex-1 overflow-y-auto no-scrollbar pb-24 relative" id="main-content">
                 
-                <!-- SCREEN: NOTICES -->
+                <!-- 1. NOTICES -->
                 <div id="screen-notices" class="screen-section p-4 space-y-5 fade-in">
+                    <div class="relative sticky top-0 z-10 bg-slate-50/90 backdrop-blur-sm pb-2">
+                        <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400"></i>
+                        <input type="text" id="search-notices" placeholder="सूचना खोज्नुहोस्..." class="w-full pl-12 pr-4 py-3 bg-white rounded-2xl border border-slate-200 focus:border-indigo-400 outline-none font-bold text-slate-700 shadow-sm transition-all text-sm">
+                    </div>
                     <div id="notices-list" class="space-y-5"></div>
-                    <button id="fab-notice" class="sachiv-only hidden fixed bottom-24 right-5 w-14 h-14 bg-indigo-600 text-white rounded-full shadow-[0_8px_25px_rgba(79,70,229,0.5)] flex items-center justify-center text-2xl active:scale-90 transition-transform z-20">
+                    <button id="fab-notice" class="sachiv-only hidden fixed bottom-24 right-5 w-16 h-16 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-full shadow-2xl shadow-indigo-500/40 flex items-center justify-center text-2xl z-20 active:scale-90 transition-transform">
                         <i class="fa-solid fa-plus"></i>
                     </button>
                 </div>
 
-                <!-- SCREEN: EVENTS -->
+                <!-- 2. EVENTS -->
                 <div id="screen-events" class="screen-section p-4 space-y-4 hidden fade-in">
+                    <div class="relative sticky top-0 z-10 bg-slate-50/90 backdrop-blur-sm pb-2">
+                        <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400"></i>
+                        <input type="text" id="search-events" placeholder="कार्यक्रम खोज्नुहोस्..." class="w-full pl-12 pr-4 py-3 bg-white rounded-2xl border border-slate-200 focus:border-indigo-400 outline-none font-bold text-slate-700 shadow-sm transition-all text-sm">
+                    </div>
                     <div id="events-list" class="space-y-4"></div>
-                    <button id="fab-event" class="sachiv-only hidden fixed bottom-24 right-5 w-14 h-14 bg-indigo-600 text-white rounded-full shadow-[0_8px_25px_rgba(79,70,229,0.5)] flex items-center justify-center text-2xl active:scale-90 transition-transform z-20">
+                    <button id="fab-event" class="sachiv-only hidden fixed bottom-24 right-5 w-16 h-16 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-full shadow-2xl shadow-indigo-500/40 flex items-center justify-center text-2xl z-20 active:scale-90 transition-transform">
                         <i class="fa-solid fa-plus"></i>
                     </button>
                 </div>
 
-                <!-- SCREEN: MINUTES -->
-                <div id="screen-minutes" class="screen-section p-4 space-y-4 hidden fade-in">
-                    <div id="minutes-list" class="space-y-4"></div>
-                    <button id="fab-minute" class="sachiv-only hidden fixed bottom-24 right-5 w-14 h-14 bg-indigo-600 text-white rounded-full shadow-[0_8px_25px_rgba(79,70,229,0.5)] flex items-center justify-center text-2xl active:scale-90 transition-transform z-20">
-                        <i class="fa-solid fa-pen-nib"></i>
+                <!-- 3. CHAT -->
+                <div id="screen-chat" class="screen-section hidden flex-col h-full bg-[#f8fafc] fade-in relative">
+                    <div class="bg-white p-3 text-center border-b border-slate-200 shrink-0 shadow-sm z-10 flex justify-center items-center gap-2">
+                        <span class="relative flex h-3 w-3">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+                        </span>
+                        <p class="text-xs font-extrabold text-slate-600 tracking-wide">आधिकारिक क्लब म्यासेन्जर</p>
+                    </div>
+                    <div id="chat-list" class="flex-1 overflow-y-auto p-4 space-y-4 no-scrollbar bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] bg-opacity-5"></div>
+                    <form id="form-chat" class="p-3 bg-white border-t border-slate-200 flex gap-2 shrink-0 pb-safe">
+                        <input type="text" id="chat-input" placeholder="म्यासेज लेख्नुहोस्..." autocomplete="off" required class="flex-1 p-4 rounded-full bg-slate-100 border border-transparent focus:bg-white focus:border-indigo-300 outline-none text-sm font-bold transition-all shadow-inner">
+                        <button type="submit" class="w-14 h-14 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-full flex items-center justify-center shadow-lg active:scale-90 transition-transform">
+                            <i class="fa-solid fa-paper-plane text-lg"></i>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- 4. FINANCE -->
+                <div id="screen-finance" class="screen-section p-4 hidden fade-in h-full flex flex-col gap-4">
+                    <div class="bg-gradient-to-br from-slate-800 to-slate-900 rounded-3xl p-6 shadow-2xl relative overflow-hidden shrink-0">
+                        <div class="absolute top-[-20%] right-[-10%] w-32 h-32 bg-emerald-500 rounded-full mix-blend-screen filter blur-2xl opacity-20"></div>
+                        <div class="flex justify-between items-start relative z-10">
+                            <div>
+                                <p class="text-slate-400 text-[11px] font-bold uppercase tracking-wider mb-1">कुल बचत (Net Balance)</p>
+                                <h2 class="text-4xl font-black text-white tracking-tight">रु. <span id="display-net-balance">0</span></h2>
+                            </div>
+                            <button id="btn-edit-fund" class="sachiv-only hidden w-10 h-10 bg-white/10 rounded-xl text-white flex items-center justify-center hover:bg-white/20 transition-colors">
+                                <i class="fa-solid fa-vault"></i>
+                            </button>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4 mt-6 pt-4 border-t border-slate-700/50 relative z-10">
+                            <div>
+                                <p class="text-slate-400 text-[10px] font-bold uppercase mb-1 flex items-center gap-1">
+                                    <i class="fa-solid fa-arrow-down text-emerald-400"></i> कुल आम्दानी
+                                </p>
+                                <p class="font-bold text-emerald-400 text-lg">रु. <span id="display-total-income">0</span></p>
+                            </div>
+                            <div>
+                                <p class="text-slate-400 text-[10px] font-bold uppercase mb-1 flex items-center gap-1">
+                                    <i class="fa-solid fa-arrow-up text-rose-400"></i> कुल खर्च
+                                </p>
+                                <p class="font-bold text-rose-400 text-lg">रु. <span id="display-total-expense">0</span></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-3xl shadow-sm border border-slate-200 flex-1 flex flex-col overflow-hidden relative">
+                        <div class="bg-slate-50/80 backdrop-blur-sm p-4 border-b border-slate-100 flex justify-between items-center sticky top-0 z-10">
+                            <h3 class="font-bold text-slate-800 text-sm"><i class="fa-solid fa-list-ul text-indigo-500 mr-2"></i> कारोबार विवरण</h3>
+                        </div>
+                        <div id="finance-list" class="flex-1 overflow-y-auto p-4 space-y-3 no-scrollbar"></div>
+                    </div>
+                    <button id="fab-finance" class="sachiv-only hidden fixed bottom-24 right-5 w-16 h-16 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-full shadow-2xl shadow-emerald-500/40 flex items-center justify-center text-2xl z-20 active:scale-90 transition-transform">
+                        <i class="fa-solid fa-plus"></i>
                     </button>
                 </div>
 
-                <!-- SCREEN: DIRECTORY & ADMIN -->
+                <!-- 5. MORE -->
+                <div id="screen-more" class="screen-section hidden flex flex-col p-4 fade-in h-full">
+                    <div class="bg-white p-5 rounded-3xl shadow-sm border border-slate-200 mb-6 flex items-center gap-5 relative overflow-hidden">
+                        <div class="absolute top-0 right-0 w-24 h-24 bg-indigo-50 rounded-bl-full -z-10"></div>
+                        <img id="my-profile-img" src="" class="w-20 h-20 rounded-2xl object-cover border-2 border-indigo-100 shadow-md hidden">
+                        <div class="w-20 h-20 bg-gradient-to-br from-indigo-500 to-purple-600 text-white rounded-2xl flex items-center justify-center text-4xl font-black shadow-md" id="profile-avatar-fallback"></div>
+                        <div>
+                            <h3 id="profile-name" class="font-black text-slate-900 text-2xl tracking-tight"></h3>
+                            <p id="profile-role" class="text-sm font-extrabold text-indigo-600 mt-1 bg-indigo-50 inline-block px-2 py-0.5 rounded-md"></p>
+                        </div>
+                    </div>
+
+                    <h4 class="font-bold text-slate-500 text-xs uppercase tracking-wider mb-3 ml-2">क्लब व्यवस्थापन</h4>
+                    <div class="grid grid-cols-2 gap-4 mb-6">
+                        <button class="nav-sub-btn bg-white p-5 rounded-3xl border border-slate-200 shadow-sm flex flex-col items-center justify-center gap-3 active:scale-95 transition-all hover:border-indigo-300" data-target="screen-directory" data-title="सदस्य विवरण">
+                            <div class="w-12 h-12 rounded-full bg-blue-50 text-blue-500 flex items-center justify-center text-2xl"><i class="fa-solid fa-address-book"></i></div>
+                            <span class="font-extrabold text-sm text-slate-700">सदस्यहरू</span>
+                        </button>
+                        <button class="nav-sub-btn bg-white p-5 rounded-3xl border border-slate-200 shadow-sm flex flex-col items-center justify-center gap-3 active:scale-95 transition-all hover:border-purple-300" data-target="screen-minutes" data-title="बैठक माइन्युट">
+                            <div class="w-12 h-12 rounded-full bg-purple-50 text-purple-500 flex items-center justify-center text-2xl"><i class="fa-solid fa-file-signature"></i></div>
+                            <span class="font-extrabold text-sm text-slate-700">माइन्युट</span>
+                        </button>
+                    </div>
+
+                    <button id="logout-btn" class="mt-auto mb-6 w-full bg-rose-50 p-4 rounded-2xl border border-rose-200 flex justify-center items-center gap-3 text-rose-600 font-extrabold text-lg active:scale-95 transition-all">
+                        <i class="fa-solid fa-power-off"></i> सुरक्षित लगआउट
+                    </button>
+                </div>
+
+                <!-- SUB-SCREEN: DIRECTORY -->
                 <div id="screen-directory" class="screen-section p-4 space-y-4 hidden fade-in">
-                    
-                    <!-- Code Generator Panel -->
-                    <div class="sachiv-only hidden bg-white p-5 rounded-2xl shadow-sm border border-indigo-100 mb-5 relative overflow-hidden">
-                        <div class="absolute top-0 right-0 w-20 h-20 bg-indigo-50 rounded-bl-full -z-0"></div>
-                        <h3 class="font-bold text-slate-800 mb-1 flex items-center gap-2 relative z-10">
-                            <i class="fa-solid fa-user-shield text-indigo-500"></i> नयाँ सदस्य थप्नुहोस्
-                        </h3>
-                        <p class="text-[11px] text-slate-500 mb-4 font-medium relative z-10">ड्रपडाउनबाट छान्नुहोस् वा नयाँ पद आफै टाइप गर्नुहोस्।</p>
-                        
-                        <div class="flex gap-2 relative z-10">
-                            <div class="flex-1 relative">
-                                <input type="text" id="invite-role" list="role-suggestions" placeholder="पद (जस्तै: सदस्य)" class="w-full p-3 border border-slate-200 rounded-xl bg-slate-50 text-sm font-bold focus:ring-2 focus:ring-indigo-500 outline-none">
-                                <datalist id="role-suggestions">
-                                    <option value="सदस्य">
-                                    <option value="अध्यक्ष">
-                                    <option value="उपाध्यक्ष">
-                                    <option value="सचिव">
-                                    <option value="सह-सचिव">
-                                    <option value="कोषाध्यक्ष">
-                                    <option value="सल्लाहकार">
-                                </datalist>
-                            </div>
-                            <button id="btn-generate-code" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-3 rounded-xl text-sm font-bold shadow-md active:scale-95 transition-transform whitespace-nowrap"><i class="fa-solid fa-wand-magic-sparkles mr-1"></i> कोड बनाउनुहोस्</button>
+                    <div class="sachiv-only hidden bg-white p-5 rounded-3xl shadow-sm border border-indigo-100 mb-5 relative overflow-hidden">
+                        <div class="absolute -right-4 -top-4 w-16 h-16 bg-indigo-50 rounded-full"></div>
+                        <h3 class="font-black text-slate-800 mb-3 flex items-center gap-2"><i class="fa-solid fa-user-plus text-indigo-500"></i> नयाँ सदस्य आमन्त्रण</h3>
+                        <div class="flex gap-2">
+                            <select id="invite-role" class="w-1/2 p-3 border border-slate-200 rounded-xl bg-slate-50 font-bold focus:ring-2 focus:ring-indigo-100 outline-none">
+                                <option value="" disabled selected>पद छान्नुहोस्</option>
+                                <option value="अध्यक्ष">अध्यक्ष</option>
+                                <option value="उपाध्यक्ष">उपाध्यक्ष</option>
+                                <option value="सचिव">सचिव</option>
+                                <option value="कोषाध्यक्ष">कोषाध्यक्ष</option>
+                                <option value="सदस्य">सदस्य</option>
+                                <option value="सल्लाहकार">सल्लाहकार</option>
+                            </select>
+                            <button id="btn-generate-code" class="w-1/2 bg-indigo-600 text-white rounded-xl font-bold shadow-md active:scale-95">कोड बनाउनुहोस्</button>
                         </div>
-                        <div id="generated-code-display" class="mt-4 hidden bg-emerald-50 p-4 rounded-xl border border-emerald-200 text-center transition-all">
-                            <p class="text-xs text-emerald-700 font-semibold mb-1">यो सुरक्षित कोड नयाँ सदस्यलाई दिनुहोस्:</p>
-                            <h2 id="new-invite-code" class="text-3xl font-black text-emerald-600 tracking-[0.25em] font-mono bg-white px-4 py-2 rounded-lg border border-emerald-100 shadow-sm inline-block mt-1"></h2>
+                        <div id="new-invite-code-container" class="hidden mt-4 text-center border-2 border-dashed border-emerald-300 bg-emerald-50 py-3 rounded-xl cursor-pointer">
+                            <p class="text-xs text-emerald-600 font-bold mb-1">यो कोड कपि गरेर दिनुहोस् (Click to Copy)</p>
+                            <h2 id="new-invite-code" class="text-3xl font-black text-emerald-700 tracking-widest"></h2>
                         </div>
                     </div>
-
-                    <!-- Search Bar (NEW FEATURE) -->
-                    <div class="relative mb-4">
-                        <i class="fa-solid fa-magnifying-glass absolute left-4 top-3.5 text-slate-400"></i>
-                        <input type="text" id="search-member" placeholder="सदस्यको नाम खोज्नुहोस्..." class="w-full pl-11 pr-4 py-3 bg-white rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none text-sm font-medium shadow-sm">
-                    </div>
-
-                    <h3 class="font-bold text-slate-400 text-[10px] uppercase tracking-widest pl-1 mb-2">क्लबका सदस्यहरू (<span id="total-members">0</span>)</h3>
                     <div id="directory-list" class="space-y-3"></div>
                 </div>
 
-                <!-- SCREEN: MORE / SYSTEM LOG -->
-                <div id="screen-more" class="screen-section hidden flex flex-col h-full p-4 fade-in">
-                    
-                    <!-- Profile Card -->
-                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 mb-6 flex items-center gap-5 relative overflow-hidden">
-                        <div class="absolute -right-4 -top-4 w-24 h-24 bg-indigo-50 rounded-full"></div>
-                        <div class="w-20 h-20 bg-gradient-to-br from-indigo-500 to-purple-600 text-white rounded-2xl flex items-center justify-center text-4xl font-black shadow-lg relative z-10 transform -rotate-3" id="profile-avatar">
-                            A
-                        </div>
-                        <div class="relative z-10">
-                            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-0.5">तपाईंको प्रोफाइल</p>
-                            <h3 id="profile-name" class="font-extrabold text-slate-900 text-2xl leading-tight"></h3>
-                            <p id="profile-role" class="text-xs font-bold text-indigo-600 bg-indigo-50 border border-indigo-100 inline-block px-3 py-1 rounded-lg mt-2 shadow-sm"></p>
-                        </div>
+                <!-- SUB-SCREEN: MINUTES -->
+                <div id="screen-minutes" class="screen-section p-4 space-y-4 hidden fade-in">
+                     <div class="relative sticky top-0 z-10 bg-slate-50/90 backdrop-blur-sm pb-2">
+                        <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400"></i>
+                        <input type="text" id="search-minutes" placeholder="माइन्युट खोज्नुहोस्..." class="w-full pl-12 pr-4 py-3 bg-white rounded-2xl border border-slate-200 focus:border-indigo-400 outline-none font-bold text-slate-700 shadow-sm transition-all text-sm">
                     </div>
-
-                    <!-- System Activity Log (NEW FEATURE) -->
-                    <div class="bg-white rounded-3xl shadow-sm border border-slate-100 flex-1 flex flex-col overflow-hidden mb-4">
-                        <div class="bg-slate-50 p-4 border-b border-slate-100 flex justify-between items-center">
-                            <h3 class="font-bold text-slate-800 text-sm"><i class="fa-solid fa-clock-rotate-left text-indigo-500 mr-2"></i>प्रणाली गतिविधि (History)</h3>
-                        </div>
-                        <div id="activity-log-list" class="p-4 space-y-4 overflow-y-auto max-h-64 no-scrollbar">
-                            <div class="text-center py-5 text-slate-400 text-sm"><i class="fa-solid fa-spinner fa-spin"></i> लोड हुँदैछ...</div>
-                        </div>
-                    </div>
-
-                    <!-- Logout -->
-                    <button id="logout-btn" class="w-full bg-white p-4 rounded-2xl shadow-sm border border-red-100 flex items-center justify-center gap-3 active:scale-[0.98] transition-transform shrink-0 hover:bg-red-50">
-                        <i class="fa-solid fa-power-off text-red-500 text-xl"></i>
-                        <span class="font-bold text-red-600 text-lg">लगआउट गर्नुहोस्</span>
+                    <div id="minutes-list" class="space-y-4"></div>
+                    <button id="fab-minute" class="sachiv-only hidden fixed bottom-24 right-5 w-16 h-16 bg-gradient-to-r from-purple-500 to-indigo-600 text-white rounded-full shadow-2xl flex items-center justify-center text-2xl z-20 active:scale-90">
+                        <i class="fa-solid fa-plus"></i>
                     </button>
-                    
-                    <div class="mt-6 text-center shrink-0">
-                        <p class="text-[10px] text-slate-400 font-bold tracking-widest uppercase">Secured System By</p>
-                        <p class="text-sm text-indigo-400 font-black mt-1">Pratik Sachiv &copy; 2083</p>
-                    </div>
                 </div>
             </main>
 
-            <!-- Modern Bottom Navigation -->
-            <nav class="bg-white/90 backdrop-blur-md border-t border-slate-200 flex justify-around px-1 py-2 pb-safe absolute bottom-0 w-full z-30 shadow-[0_-5px_20px_rgba(0,0,0,0.05)]">
-                <button class="nav-btn w-16 h-14 flex flex-col items-center justify-center text-indigo-600 transition-all rounded-xl hover:bg-slate-50" data-target="screen-notices" data-title="सूचना पाटी" data-icon="fa-bullhorn">
-                    <i class="fa-solid fa-bullhorn text-[20px] mb-1"></i>
-                    <span class="text-[9px] font-bold">सूचना</span>
+            <!-- Bottom Navigation -->
+            <nav class="glass-nav flex justify-around px-2 py-2 pb-safe absolute bottom-0 w-full z-30">
+                <button class="nav-btn w-1/5 py-2 flex flex-col items-center text-indigo-600 relative group" data-target="screen-notices" data-title="सूचना पाटी" data-icon="fa-bullhorn">
+                    <div class="nav-indicator absolute -top-2 w-8 h-1 bg-indigo-600 rounded-b-full transition-opacity opacity-100"></div>
+                    <i class="fa-solid fa-bullhorn text-xl mb-1 group-active:scale-90 transition-transform"></i>
+                    <span class="text-[10px] font-extrabold">सूचना</span>
                 </button>
-                <button class="nav-btn w-16 h-14 flex flex-col items-center justify-center text-slate-400 hover:text-indigo-500 transition-all rounded-xl hover:bg-slate-50" data-target="screen-events" data-title="कार्यक्रमहरू" data-icon="fa-list-check">
-                    <i class="fa-solid fa-list-check text-[20px] mb-1"></i>
-                    <span class="text-[9px] font-bold">कार्यक्रम</span>
+                <button class="nav-btn w-1/5 py-2 flex flex-col items-center text-slate-400 relative group" data-target="screen-events" data-title="कार्यक्रमहरू" data-icon="fa-list-check">
+                    <div class="nav-indicator absolute -top-2 w-8 h-1 bg-indigo-600 rounded-b-full transition-opacity opacity-0"></div>
+                    <i class="fa-solid fa-list-check text-xl mb-1 group-active:scale-90 transition-transform"></i>
+                    <span class="text-[10px] font-extrabold">कार्यक्रम</span>
                 </button>
-                <button class="nav-btn w-16 h-14 flex flex-col items-center justify-center text-slate-400 hover:text-indigo-500 transition-all rounded-xl hover:bg-slate-50" data-target="screen-minutes" data-title="बैठक माइन्युट" data-icon="fa-file-signature">
-                    <i class="fa-solid fa-file-signature text-[20px] mb-1"></i>
-                    <span class="text-[9px] font-bold">माइन्युट</span>
+                <button class="nav-btn w-1/5 py-2 flex flex-col items-center text-slate-400 relative group" data-target="screen-chat" data-title="छलफल" data-icon="fa-comments">
+                    <div class="nav-indicator absolute -top-2 w-8 h-1 bg-indigo-600 rounded-b-full transition-opacity opacity-0"></div>
+                    <i class="fa-solid fa-comments text-xl mb-1 group-active:scale-90 transition-transform"></i>
+                    <span class="text-[10px] font-extrabold">च्याट</span>
                 </button>
-                <button class="nav-btn w-16 h-14 flex flex-col items-center justify-center text-slate-400 hover:text-indigo-500 transition-all rounded-xl hover:bg-slate-50" data-target="screen-directory" data-title="सदस्य विवरण" data-icon="fa-address-book">
-                    <i class="fa-solid fa-address-book text-[20px] mb-1"></i>
-                    <span class="text-[9px] font-bold">सदस्य</span>
+                <button class="nav-btn w-1/5 py-2 flex flex-col items-center text-slate-400 relative group" data-target="screen-finance" data-title="आर्थिक विवरण" data-icon="fa-wallet">
+                    <div class="nav-indicator absolute -top-2 w-8 h-1 bg-indigo-600 rounded-b-full transition-opacity opacity-0"></div>
+                    <i class="fa-solid fa-wallet text-xl mb-1 group-active:scale-90 transition-transform"></i>
+                    <span class="text-[10px] font-extrabold">आर्थिक</span>
                 </button>
-                <button class="nav-btn w-16 h-14 flex flex-col items-center justify-center text-slate-400 hover:text-indigo-500 transition-all rounded-xl hover:bg-slate-50" data-target="screen-more" data-title="थप मेनु" data-icon="fa-bars-staggered">
-                    <i class="fa-solid fa-bars-staggered text-[20px] mb-1"></i>
-                    <span class="text-[9px] font-bold">थप</span>
+                <button class="nav-btn w-1/5 py-2 flex flex-col items-center text-slate-400 relative group" data-target="screen-more" data-title="थप मेनु" data-icon="fa-bars">
+                    <div class="nav-indicator absolute -top-2 w-8 h-1 bg-indigo-600 rounded-b-full transition-opacity opacity-0"></div>
+                    <i class="fa-solid fa-bars text-xl mb-1 group-active:scale-90 transition-transform"></i>
+                    <span class="text-[10px] font-extrabold">थप</span>
                 </button>
             </nav>
         </div>
 
-        <!-- ==================== 3. MODALS (फारमहरू) ==================== -->
+        <!-- ==================== PREMIUM MODALS ==================== -->
         
-        <!-- Notice Modal (With Image URL Support) -->
-        <div id="modal-notice" class="hidden absolute inset-0 glass-bg z-[60] flex items-end sm:items-center justify-center p-0 sm:p-4">
-            <div class="bg-white w-full sm:rounded-3xl rounded-t-3xl p-6 modal-enter shadow-2xl max-h-[90vh] overflow-y-auto no-scrollbar">
+        <!-- Notice Modal -->
+        <div id="modal-notice" class="hidden absolute inset-0 glass-modal z-[60] flex items-end sm:items-center justify-center p-0 sm:p-4">
+            <div class="bg-white w-full sm:rounded-3xl rounded-t-3xl p-6 modal-enter shadow-2xl relative">
+                <div class="w-12 h-1.5 bg-slate-200 rounded-full mx-auto mb-4 sm:hidden"></div>
                 <div class="flex justify-between items-center mb-5">
-                    <h2 class="text-xl font-black text-slate-800">नयाँ सूचना</h2>
-                    <button class="close-modal w-8 h-8 bg-slate-100 text-slate-500 rounded-full flex justify-center items-center hover:bg-slate-200 transition"><i class="fa-solid fa-xmark"></i></button>
+                    <h2 class="text-2xl font-black text-slate-800">नयाँ सूचना</h2>
+                    <button class="close-modal w-8 h-8 bg-slate-100 rounded-full"><i class="fa-solid fa-xmark"></i></button>
                 </div>
                 <form id="form-notice" class="space-y-4">
-                    <div>
-                        <label class="text-[11px] font-bold text-slate-500 uppercase ml-1">सूचनाको शीर्षक *</label>
-                        <input type="text" id="notice-title" placeholder="जस्तै: आकस्मिक बैठक बस्ने बारे" required class="mt-1 w-full p-3.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none font-bold bg-slate-50 focus:bg-white transition-colors">
+                    <input type="text" id="notice-title" placeholder="शीर्षक *" required class="w-full p-4 rounded-2xl border border-slate-200 bg-slate-50 font-bold">
+                    <input type="url" id="notice-image" placeholder="फोटो लिङ्क (URL - Optional)" class="w-full p-4 rounded-2xl border border-slate-200 bg-slate-50 text-sm">
+                    <textarea id="notice-content" placeholder="विवरण *" rows="4" required class="w-full p-4 rounded-2xl border border-slate-200 bg-slate-50 text-sm"></textarea>
+                    <div class="flex items-center gap-3 p-3 bg-rose-50 border border-rose-100 rounded-2xl">
+                        <input type="checkbox" id="notice-pinned" class="w-5 h-5 rounded border-rose-300 text-rose-500 focus:ring-rose-500">
+                        <label for="notice-pinned" class="text-sm font-bold text-rose-700">यसलाई जरुरी (Pinned) सूचना बनाउने</label>
                     </div>
-                    <div>
-                        <label class="text-[11px] font-bold text-slate-500 uppercase ml-1">फोटोको लिङ्क (Image URL - Optional)</label>
-                        <input type="url" id="notice-image" placeholder="https://example.com/photo.jpg" class="mt-1 w-full p-3.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none text-sm bg-slate-50 focus:bg-white transition-colors">
-                        <p class="text-[10px] text-slate-400 mt-1 ml-1">तस्बिर राख्न मन लागे इन्टरनेटको लिङ्क यहाँ टाँस्नुहोस्।</p>
-                    </div>
-                    <div>
-                        <label class="text-[11px] font-bold text-slate-500 uppercase ml-1">विवरण *</label>
-                        <textarea id="notice-content" placeholder="विस्तृत कुरा यहाँ लेख्नुहोस्..." rows="4" required class="mt-1 w-full p-3.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none text-sm bg-slate-50 focus:bg-white transition-colors"></textarea>
-                    </div>
-                    <label class="flex items-center gap-3 p-3.5 bg-rose-50 rounded-xl border border-rose-100 cursor-pointer">
-                        <input type="checkbox" id="notice-pinned" class="w-5 h-5 text-rose-600 rounded border-rose-300 focus:ring-rose-500">
-                        <span class="font-bold text-sm text-rose-800">अति जरुरी (माथि पिन गर्नुहोस्)</span>
-                    </label>
-                    <button type="submit" id="btn-submit-notice" class="w-full bg-indigo-600 text-white p-4 rounded-xl font-bold shadow-lg hover:bg-indigo-700 active:scale-[0.98] transition-all flex justify-center items-center gap-2 mt-2 text-lg">
-                        <i class="fa-regular fa-paper-plane"></i> प्रकाशित गर्नुहोस्
+                    <button type="submit" class="w-full bg-indigo-600 text-white p-4 rounded-2xl font-bold text-lg mt-2 shadow-lg active:scale-95">प्रकाशित गर्नुहोस्</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Comments Modal -->
+        <div id="modal-comments" class="hidden absolute inset-0 glass-modal z-[60] flex flex-col justify-end sm:justify-center p-0 sm:p-4">
+            <div class="bg-white w-full sm:rounded-3xl rounded-t-3xl p-4 modal-enter flex flex-col h-[75vh] shadow-2xl relative">
+                <div class="w-12 h-1.5 bg-slate-200 rounded-full mx-auto mb-2 sm:hidden"></div>
+                <div class="flex justify-between items-center mb-3 border-b border-slate-100 pb-3">
+                    <h2 class="text-xl font-black text-slate-800"><i class="fa-regular fa-comments text-indigo-500 mr-2"></i>कमेन्टहरू</h2>
+                    <button class="close-modal w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center text-slate-500"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <div id="comments-list" class="flex-1 overflow-y-auto space-y-3 p-2 no-scrollbar"></div>
+                <form id="form-comment" class="mt-2 flex gap-2 pt-3 border-t border-slate-100 pb-safe">
+                    <input type="hidden" id="comment-notice-id">
+                    <input type="text" id="comment-text" required placeholder="कमेन्ट लेख्नुहोस्..." class="flex-1 p-3.5 rounded-full bg-slate-100 border border-transparent focus:border-indigo-300 focus:bg-white text-sm font-bold transition-all outline-none">
+                    <button type="submit" class="w-12 h-12 bg-indigo-600 text-white rounded-full flex items-center justify-center shadow-md">
+                        <i class="fa-solid fa-paper-plane"></i>
                     </button>
                 </form>
             </div>
         </div>
 
-        <!-- Event Modal (With Status Dropdown) -->
-        <div id="modal-event" class="hidden absolute inset-0 glass-bg z-[60] flex items-end sm:items-center justify-center p-0 sm:p-4">
-            <div class="bg-white w-full sm:rounded-3xl rounded-t-3xl p-6 modal-enter shadow-2xl max-h-[90vh] overflow-y-auto no-scrollbar">
+        <!-- Seen By Modal -->
+        <div id="modal-seen-by" class="hidden absolute inset-0 glass-modal z-[60] flex items-end sm:items-center justify-center p-0 sm:p-4">
+            <div class="bg-white w-full sm:rounded-3xl rounded-t-3xl p-6 modal-enter max-h-[80vh] flex flex-col shadow-2xl relative">
+                <div class="w-12 h-1.5 bg-slate-200 rounded-full mx-auto mb-4 sm:hidden shrink-0"></div>
+                <div class="flex justify-between items-center mb-4 shrink-0">
+                    <h2 class="text-xl font-black text-slate-800"><i class="fa-solid fa-eye text-indigo-500 mr-2"></i>कसले हेर्‍यो?</h2>
+                    <button class="close-modal w-8 h-8 bg-slate-100 rounded-full text-slate-500"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <div id="seen-by-list" class="flex-1 overflow-y-auto space-y-2 no-scrollbar border-t border-slate-100 pt-3"></div>
+            </div>
+        </div>
+
+        <!-- Event Modal -->
+        <div id="modal-event" class="hidden absolute inset-0 glass-modal z-[60] flex items-end sm:items-center justify-center p-0 sm:p-4">
+            <div class="bg-white w-full sm:rounded-3xl rounded-t-3xl p-6 modal-enter max-h-[90vh] overflow-y-auto no-scrollbar shadow-2xl">
                 <div class="flex justify-between items-center mb-5">
-                    <h2 class="text-xl font-black text-slate-800">नयाँ कार्यक्रम / कार्य</h2>
-                    <button class="close-modal w-8 h-8 bg-slate-100 text-slate-500 rounded-full flex justify-center items-center hover:bg-slate-200 transition"><i class="fa-solid fa-xmark"></i></button>
+                    <h2 class="text-2xl font-black text-slate-800">नयाँ कार्यक्रम</h2>
+                    <button class="close-modal w-8 h-8 bg-slate-100 rounded-full"><i class="fa-solid fa-xmark"></i></button>
                 </div>
                 <form id="form-event" class="space-y-4">
-                    <div>
-                        <label class="text-[11px] font-bold text-slate-500 uppercase ml-1">कार्यक्रमको नाम *</label>
-                        <input type="text" id="event-title" placeholder="जस्तै: वृक्षारोपण" required class="mt-1 w-full p-3.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none font-bold bg-slate-50 focus:bg-white transition-colors">
-                    </div>
-                    
+                    <input type="text" id="event-title" placeholder="कार्यक्रमको नाम *" required class="w-full p-4 rounded-2xl border border-slate-200 bg-slate-50 font-bold">
                     <div class="flex gap-3">
-                        <div class="w-1/2">
-                            <label class="text-[11px] font-bold text-slate-500 uppercase ml-1">मिति *</label>
-                            <input type="date" id="event-date" required class="mt-1 w-full p-3.5 rounded-xl border border-slate-200 outline-none font-bold bg-slate-50 focus:bg-white transition-colors text-sm">
-                        </div>
-                        <div class="w-1/2">
-                            <label class="text-[11px] font-bold text-slate-500 uppercase ml-1">जिम्मेवारी *</label>
-                            <input type="text" id="event-assigned" placeholder="जस्तै: सबै सदस्य" required class="mt-1 w-full p-3.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none text-sm bg-slate-50 focus:bg-white font-medium">
-                        </div>
+                        <input type="text" id="event-date" placeholder="मिति *" required class="w-1/2 p-4 rounded-2xl border border-slate-200 bg-slate-50 font-bold text-sm">
+                        <input type="text" id="event-assigned" placeholder="जिम्मेवारी *" required class="w-1/2 p-4 rounded-2xl border border-slate-200 bg-slate-50 font-bold text-sm">
                     </div>
-                    
-                    <div>
-                        <label class="text-[11px] font-bold text-slate-500 uppercase ml-1">अहिलेको अवस्था (Status) *</label>
-                        <select id="event-status-input" class="mt-1 w-full p-3.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none text-sm bg-slate-50 focus:bg-white font-bold">
-                            <option value="pending">🟠 बाँकी छ (Pending)</option>
-                            <option value="in-progress">🔵 हुँदैछ (In Progress)</option>
-                            <option value="completed">🟢 सम्पन्न भयो (Completed)</option>
-                            <option value="cancelled">🔴 रद्द भयो (Cancelled)</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label class="text-[11px] font-bold text-slate-500 uppercase ml-1">थप विवरण (Optional)</label>
-                        <textarea id="event-desc" placeholder="स्थान, समय आदि..." rows="2" class="mt-1 w-full p-3.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none text-sm bg-slate-50 focus:bg-white"></textarea>
-                    </div>
-                    
-                    <button type="submit" id="btn-submit-event" class="w-full bg-indigo-600 text-white p-4 rounded-xl font-bold shadow-lg hover:bg-indigo-700 active:scale-[0.98] transition-all flex justify-center items-center gap-2 mt-2 text-lg">
-                        <i class="fa-solid fa-floppy-disk"></i> सुरक्षित गर्नुहोस्
-                    </button>
+                    <select id="event-status-input" class="w-full p-4 rounded-2xl border border-slate-200 bg-slate-50 font-bold text-sm outline-none focus:ring-2 focus:ring-indigo-100">
+                        <option value="pending">🟠 बाँकी छ</option>
+                        <option value="in-progress">🔵 हुँदैछ</option>
+                        <option value="completed">🟢 सम्पन्न भयो</option>
+                        <option value="cancelled">🔴 रद्द भयो</option>
+                    </select>
+                    <textarea id="event-desc" placeholder="थप विवरण..." rows="3" class="w-full p-4 rounded-2xl border border-slate-200 bg-slate-50 text-sm"></textarea>
+                    <button type="submit" class="w-full bg-indigo-600 text-white p-4 rounded-2xl font-bold text-lg mt-2 shadow-lg active:scale-95">सुरक्षित गर्नुहोस्</button>
                 </form>
             </div>
         </div>
 
-        <!-- Minute Modal (Checkbox Attendance) -->
-        <div id="modal-minute" class="hidden absolute inset-0 glass-bg z-[60] flex items-end sm:items-center justify-center p-0 sm:p-4">
-            <div class="bg-white w-full sm:rounded-3xl rounded-t-3xl p-6 modal-enter shadow-2xl max-h-[95vh] overflow-y-auto no-scrollbar">
-                <div class="flex justify-between items-center mb-4 border-b border-slate-100 pb-3">
-                    <h2 class="text-xl font-black text-slate-800">नयाँ माइन्युट</h2>
-                    <button class="close-modal w-8 h-8 bg-slate-100 text-slate-500 rounded-full flex justify-center items-center hover:bg-slate-200 transition"><i class="fa-solid fa-xmark"></i></button>
+        <!-- Finance Modal -->
+        <div id="modal-finance" class="hidden absolute inset-0 glass-modal z-[60] flex items-end sm:items-center justify-center p-0 sm:p-4">
+            <div class="bg-white w-full sm:rounded-3xl rounded-t-3xl p-6 modal-enter shadow-2xl">
+                <div class="flex justify-between items-center mb-5">
+                    <h2 class="text-2xl font-black text-slate-800">नयाँ आर्थिक विवरण</h2>
+                    <button class="close-modal w-8 h-8 bg-slate-100 rounded-full"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <form id="form-finance" class="space-y-4">
+                    <select id="fin-type" class="w-full p-4 rounded-2xl border bg-slate-50 font-bold text-sm">
+                        <option value="income">🟢 आम्दानी</option>
+                        <option value="expense">🔴 खर्च</option>
+                    </select>
+                    <input type="text" id="fin-topic" placeholder="शीर्षक *" required class="w-full p-4 rounded-2xl border bg-slate-50 font-bold text-sm">
+                    <input type="number" id="fin-amount" placeholder="रकम (रु.) *" required class="w-full p-4 rounded-2xl border bg-slate-50 font-bold text-sm">
+                    <input type="url" id="fin-bill" placeholder="बिलको फोटो लिङ्क (URL)" class="w-full p-4 rounded-2xl border bg-slate-50 text-sm">
+                    <input type="text" id="fin-date" placeholder="मिति *" required class="w-full p-4 rounded-2xl border bg-slate-50 font-bold text-sm">
+                    <button type="submit" class="w-full bg-emerald-600 text-white p-4 rounded-2xl font-bold text-lg shadow-lg">रेकर्ड थप्नुहोस्</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Initial Fund Modal -->
+        <div id="modal-initial-fund" class="hidden absolute inset-0 glass-modal z-[60] flex items-center justify-center p-4">
+            <div class="bg-white w-full rounded-3xl p-6 modal-enter shadow-2xl">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-black text-slate-800">प्रारम्भिक कोष</h2>
+                    <button class="close-modal text-xl text-slate-500"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <form id="form-initial-fund" class="space-y-4">
+                    <input type="number" id="input-initial-fund" required class="w-full p-4 rounded-2xl border bg-slate-50 font-black text-lg text-emerald-600">
+                    <button type="submit" class="w-full bg-slate-800 text-white p-4 rounded-2xl font-bold text-lg shadow-lg">अपडेट गर्नुहोस्</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Edit Member Modal -->
+        <div id="modal-member-edit" class="hidden absolute inset-0 glass-modal z-[60] flex items-end sm:items-center justify-center p-0 sm:p-4">
+            <div class="bg-white w-full sm:rounded-3xl rounded-t-3xl p-6 modal-enter shadow-2xl">
+                <div class="flex justify-between items-center mb-5">
+                    <h2 class="text-xl font-black text-slate-800">सदस्य विवरण अपडेट</h2>
+                    <button class="close-modal text-xl"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <form id="form-member-edit" class="space-y-4">
+                    <input type="hidden" id="edit-member-code">
+                    <input type="text" id="edit-member-name" required class="w-full p-4 rounded-2xl border border-indigo-200 bg-indigo-50 font-black text-indigo-700 text-sm">
+                    <input type="text" id="edit-member-phone" placeholder="फोन नम्बर" class="w-full p-4 rounded-2xl border bg-slate-50 font-bold text-sm">
+                    <input type="text" id="edit-member-class" placeholder="कक्षा वा ठेगाना" class="w-full p-4 rounded-2xl border bg-slate-50 font-bold text-sm">
+                    <input type="url" id="edit-member-pic" placeholder="प्रोफाइल फोटो लिङ्क" class="w-full p-4 rounded-2xl border bg-slate-50 text-sm">
+                    <button type="submit" class="w-full bg-indigo-600 text-white p-4 rounded-2xl font-bold text-lg shadow-lg">अपडेट गर्नुहोस्</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Minutes Modal -->
+        <div id="modal-minute" class="hidden absolute inset-0 glass-modal z-[60] flex items-end sm:items-center justify-center p-0 sm:p-4">
+            <div class="bg-white w-full sm:rounded-3xl rounded-t-3xl p-6 modal-enter max-h-[95vh] overflow-y-auto no-scrollbar shadow-2xl">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-2xl font-black text-slate-800">माइन्युट रेकर्ड</h2>
+                    <button class="close-modal text-xl"><i class="fa-solid fa-xmark"></i></button>
                 </div>
                 <form id="form-minute" class="space-y-4">
-                    <div class="flex gap-3 bg-slate-50 p-3.5 rounded-xl border border-slate-200">
-                        <div class="w-1/3">
-                            <label class="text-[10px] font-bold text-slate-500 uppercase">बैठक नं.</label>
-                            <input type="number" id="min-number" placeholder="01" required class="w-full p-2.5 rounded-lg border border-slate-200 outline-none text-center font-black text-lg bg-white mt-1 text-indigo-700 shadow-sm">
-                        </div>
-                        <div class="w-2/3">
-                            <label class="text-[10px] font-bold text-slate-500 uppercase">मिति</label>
-                            <input type="date" id="min-date" required class="w-full p-2.5 rounded-lg border border-slate-200 outline-none text-sm font-bold bg-white mt-1 shadow-sm">
-                        </div>
+                    <input type="hidden" id="min-id">
+                    <div class="flex gap-3">
+                        <input type="number" id="min-number" placeholder="बैठक नं." required class="w-1/3 p-4 rounded-2xl border font-bold">
+                        <input type="text" id="min-date" placeholder="मिति" required class="w-2/3 p-4 rounded-2xl border font-bold text-sm">
                     </div>
-                    
                     <div>
-                        <label class="block text-[11px] font-bold text-slate-500 uppercase ml-1 mb-2">उपस्थिति (टिक लगाउनुहोस्):</label>
-                        <div id="attendance-list" class="grid grid-cols-2 gap-2 max-h-36 overflow-y-auto p-3 border border-slate-200 rounded-xl bg-slate-50 text-sm shadow-inner">
-                            <!-- Populated dynamically -->
-                        </div>
+                        <label class="text-xs font-bold text-slate-500 mb-1 block">उपस्थिति</label>
+                        <div id="attendance-list" class="grid grid-cols-2 gap-2 max-h-32 overflow-y-auto p-3 border rounded-2xl bg-slate-50 text-xs shadow-inner"></div>
                     </div>
-
-                    <div>
-                        <label class="block text-[11px] font-bold text-slate-500 uppercase ml-1 mb-1">प्रस्तावहरू (Agendas):</label>
-                        <textarea id="min-agenda" placeholder="१. ...&#10;२. ..." rows="3" required class="w-full p-3.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none text-sm bg-slate-50"></textarea>
-                    </div>
-
-                    <div>
-                        <label class="block text-[11px] font-bold text-slate-500 uppercase ml-1 mb-1">निर्णयहरू (Decisions):</label>
-                        <textarea id="min-decision" placeholder="प्रस्ताव १ माथि छलफल हुँदा...&#10;प्रस्ताव २ माथि..." rows="4" required class="w-full p-3.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none text-sm bg-slate-50"></textarea>
-                    </div>
-
-                    <button type="submit" id="btn-submit-minute" class="w-full bg-indigo-600 text-white p-4 rounded-xl font-bold shadow-lg hover:bg-indigo-700 transition-all flex justify-center items-center gap-2 text-lg mt-4">
-                        <i class="fa-solid fa-file-signature"></i> माइन्युट अभिलेख गर्नुहोस्
-                    </button>
+                    <textarea id="min-agenda" placeholder="प्रस्तावहरू..." rows="2" required class="w-full p-4 rounded-2xl border bg-slate-50 text-sm"></textarea>
+                    <textarea id="min-decision" placeholder="निर्णयहरू..." rows="3" required class="w-full p-4 rounded-2xl border bg-slate-50 text-sm"></textarea>
+                    <button type="submit" class="w-full bg-purple-600 text-white p-4 rounded-2xl font-bold text-lg shadow-lg">अभिलेख गर्नुहोस्</button>
                 </form>
             </div>
         </div>
 
     </div>
 
-    <!-- MAIN JAVASCRIPT LOGIC -->
+    <!-- FIREBASE & JAVASCRIPT (FULL LOGIC) -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, push, set, onValue, remove, get, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        // Configuration
         const firebaseConfig = {
             apiKey: "AIzaSyCA8IrRtzEhYvF-QR_-D_BYiGY6G5rpHpo",
             authDomain: "bal-3cec0.firebaseapp.com",
@@ -360,512 +485,874 @@
             messagingSenderId: "669888935166",
             appId: "1:669888935166:web:a2912be9940798d705e1af"
         };
-
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        // State
         let currentUser = JSON.parse(localStorage.getItem('clubUser')) || null;
-        const MASTER_CODE = "PRATIK2083"; 
-        let allMembersData = []; // Store for search filtering
+        const MASTER_CODE = "PRATIK2083";
+        let initialFundAmount = 0;
+        let isRealtimeDataFetched = false;
 
-        // UI Elements
-        const loginView = document.getElementById('login-view');
-        const appView = document.getElementById('app-view');
-        const loginBtn = document.getElementById('login-btn');
+        let globalNotices = [];
+        let globalEvents = [];
+        let globalMinutes = [];
+        let sessionSeen = new Set(); 
 
-        // ==========================================
-        // UTILITIES
-        // ==========================================
-        function showToast(message, type = 'success') {
-            const container = document.getElementById('toast-container');
-            const toast = document.createElement('div');
-            const isSuccess = type === 'success';
-            toast.className = `toast flex items-center gap-3 px-4 py-3.5 rounded-2xl shadow-[0_10px_20px_rgba(0,0,0,0.1)] border ${isSuccess ? 'bg-white border-emerald-500' : 'bg-red-600 text-white border-red-700'}`;
-            toast.innerHTML = `<div class="flex-shrink-0 ${isSuccess ? 'text-emerald-500' : 'text-white'}"><i class="fa-solid ${isSuccess ? 'fa-circle-check' : 'fa-circle-exclamation'} text-2xl"></i></div><p class="text-sm font-bold ${isSuccess ? 'text-slate-800' : 'text-white'} leading-tight">${message}</p>`;
-            container.appendChild(toast);
-            setTimeout(() => toast.classList.add('show'), 10);
-            setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 400); }, 3000);
-        }
+        // ================= ONESIGNAL PUSH NOTIFICATION SETUP =================
+        const ONESIGNAL_APP_ID = "6838bc52-b975-44ad-b4c2-d6f4edbdeb9a"; 
+        const ONESIGNAL_REST_API_KEY = "os_v2_app_na4lyuvzovck3ngc232o3ppltl6xvfkq3rne4b45sipmgz3kds4czxgo537fzwaskmrwx673fenscbcb3jeisdrtxfxd2zqkdnghbdi";
 
-        const formatDate = (dateStr) => { 
-            return new Date(dateStr).toLocaleDateString('ne-NP', { year: 'numeric', month: 'long', day: 'numeric' }); 
-        };
-
-        function isSachiv() { return currentUser && currentUser.role === 'सचिव'; }
-
-        // ==========================================
-        // SYSTEM ACTIVITY LOG (NEW FEATURE)
-        // ==========================================
-        async function logActivity(actionText) {
-            if(!currentUser) return;
-            const logData = {
-                action: actionText,
-                user: currentUser.name,
-                role: currentUser.role,
-                timestamp: Date.now()
-            };
-            await push(ref(db, 'activity_logs'), logData);
-        }
-
-        // ==========================================
-        // AUTHENTICATION
-        // ==========================================
-        function applyRolePermissions() {
-            document.querySelectorAll('.sachiv-only').forEach(el => {
-                if (isSachiv()) el.classList.remove('hidden');
-                else el.classList.add('hidden');
-            });
-        }
-
-        function checkAuth() {
-            if (currentUser) {
-                loginView.classList.add('hidden');
-                appView.classList.remove('hidden');
-                appView.classList.add('flex');
-                
-                document.getElementById('user-badge').textContent = currentUser.role;
-                document.getElementById('profile-name').textContent = currentUser.name;
-                document.getElementById('profile-role').textContent = currentUser.role;
-                document.getElementById('profile-avatar').textContent = currentUser.name.charAt(0).toUpperCase();
-                
-                applyRolePermissions();
-                fetchRealtimeData(); 
-            } else {
-                loginView.classList.remove('hidden');
-                appView.classList.add('hidden');
-                appView.classList.remove('flex');
+        async function sendPushNotification(title, message) {
+            try {
+                await fetch("https://onesignal.com/api/v1/notifications", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": "Basic " + ONESIGNAL_REST_API_KEY
+                    },
+                    body: JSON.stringify({
+                        app_id: ONESIGNAL_APP_ID,
+                        included_segments: ["All"], 
+                        headings: { "en": title },
+                        contents: { "en": message }
+                    })
+                });
+            } catch(e) { 
+                console.log("Push Error:", e); 
             }
         }
+        // ======================================================================
 
-        loginBtn.addEventListener('click', async () => {
-            const name = document.getElementById('auth-name').value.trim();
-            const code = document.getElementById('auth-code').value.trim().toUpperCase();
-            if (!name || !code) return showToast("कृपया नाम र कोड दुवै भर्नुहोस्।", "error");
+        function showToast(msg, type='success'){
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            
+            const icon = type === 'success' ? '<i class="fa-solid fa-circle-check text-emerald-500 text-xl"></i>' : '<i class="fa-solid fa-circle-exclamation text-rose-500 text-xl"></i>';
+            const borderClass = type === 'success' ? 'border-emerald-200 bg-emerald-50' : 'border-rose-200 bg-rose-50';
+            const textClass = type === 'success' ? 'text-emerald-800' : 'text-rose-800';
 
-            const originalText = loginBtn.innerHTML;
-            loginBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> प्रतीक्षा गर्नुहोस्...`;
-            loginBtn.disabled = true;
-
-            try {
-                if (code === MASTER_CODE) {
-                    const userData = { name: name, role: 'सचिव', code: code };
-                    await set(ref(db, 'users/' + code), userData);
-                    logActivity('मास्टर कोड मार्फत प्रणाली सेटअप गरियो');
-                    return finishLogin(userData, "प्रणालीमा स्वागत छ सचिवज्यू !");
-                }
-                const userSnap = await get(ref(db, 'users/' + code));
-                if (userSnap.exists()) {
-                    const existingUser = userSnap.val();
-                    if (existingUser.name === name) return finishLogin(existingUser, `स्वागत छ, ${name} !`);
-                    else { showToast("यो कोड अर्को व्यक्तिको नाममा दर्ता छ।", "error"); return resetBtn(originalText); }
-                }
-                const inviteSnap = await get(ref(db, 'invites/' + code));
-                if (inviteSnap.exists()) {
-                    const userData = { name: name, role: inviteSnap.val().role, code: code };
-                    await set(ref(db, 'users/' + code), userData);
-                    await remove(ref(db, 'invites/' + code));
-                    logActivity(`नयाँ सदस्य (${name}) प्रणालीमा जोडिए`);
-                    finishLogin(userData, "खाता सफलतापूर्वक बन्यो !");
-                } else { showToast("कोड गलत छ।", "error"); resetBtn(originalText); }
-            } catch (error) { showToast("इन्टरनेट समस्या।", "error"); resetBtn(originalText); }
-        });
-
-        function finishLogin(userData, msg) {
-            localStorage.setItem('clubUser', JSON.stringify(userData));
-            currentUser = userData;
-            showToast(msg, "success");
-            checkAuth();
+            toast.className = `toast flex items-center gap-3 px-5 py-4 rounded-2xl shadow-xl border ${borderClass} w-full`;
+            toast.innerHTML = `${icon}<span class="text-sm font-extrabold ${textClass}">${msg}</span>`;
+            
+            container.appendChild(toast); 
+            requestAnimationFrame(() => toast.classList.add('show'));
+            
+            setTimeout(() => { 
+                toast.classList.remove('show'); 
+                setTimeout(() => toast.remove(), 500); 
+            }, 3000);
         }
-        function resetBtn(text) { loginBtn.innerHTML = text; loginBtn.disabled = false; }
 
-        document.getElementById('logout-btn').addEventListener('click', () => { 
-            localStorage.removeItem('clubUser'); 
-            window.location.reload(); 
-        });
+        function isSachiv() { 
+            return currentUser && currentUser.role === 'सचिव'; 
+        }
+        
+        function linkify(text) { 
+            if(!text) return ''; 
+            return text.replace(/(https?:\/\/[^\s]+)/g, `<a href="$1" target="_blank" class="text-indigo-600 underline font-extrabold">Link</a>`); 
+        }
 
-        // ==========================================
-        // NAVIGATION & MODALS
-        // ==========================================
         const screens = document.querySelectorAll('.screen-section');
-        const navBtns = document.querySelectorAll('.nav-btn');
-        const appHeaderTitle = document.getElementById('app-header-title');
-        const headerIcon = document.getElementById('header-icon');
+        const navBtns = document.querySelectorAll('.nav-btn, .nav-sub-btn');
+        const backBtn = document.getElementById('back-btn');
+        const headerIconBox = document.getElementById('header-icon-box');
 
         navBtns.forEach(btn => {
             btn.addEventListener('click', () => {
-                appHeaderTitle.textContent = btn.dataset.title;
-                headerIcon.className = `fa-solid ${btn.dataset.icon}`;
-                
-                screens.forEach(screen => screen.classList.add('hidden'));
+                document.getElementById('app-header-title').textContent = btn.dataset.title;
+                if(btn.dataset.icon) {
+                    document.getElementById('header-icon').className = `fa-solid ${btn.dataset.icon} text-lg`;
+                }
+
+                screens.forEach(s => s.classList.add('hidden'));
                 document.getElementById(btn.dataset.target).classList.remove('hidden');
                 
-                navBtns.forEach(n => { 
-                    n.classList.remove('text-indigo-600', 'bg-slate-50'); 
-                    n.classList.add('text-slate-400'); 
+                document.querySelectorAll('.nav-btn').forEach(n => { 
+                    n.classList.remove('text-indigo-600'); 
+                    n.classList.add('text-slate-400');
+                    n.querySelector('.nav-indicator').classList.replace('opacity-100', 'opacity-0');
                 });
-                btn.classList.remove('text-slate-400'); 
-                btn.classList.add('text-indigo-600', 'bg-slate-50');
+                
+                if(btn.classList.contains('nav-btn')) { 
+                    btn.classList.remove('text-slate-400'); 
+                    btn.classList.add('text-indigo-600');
+                    btn.querySelector('.nav-indicator').classList.replace('opacity-0', 'opacity-100');
+                }
+                
+                if(btn.dataset.target === 'screen-directory' || btn.dataset.target === 'screen-minutes') {
+                    backBtn.classList.remove('hidden'); 
+                    headerIconBox.classList.add('hidden');
+                } else {
+                    backBtn.classList.add('hidden'); 
+                    headerIconBox.classList.remove('hidden');
+                }
+                
+                if(btn.dataset.target === 'screen-chat') {
+                    setTimeout(() => { 
+                        const c = document.getElementById('chat-list'); 
+                        c.scrollTop = c.scrollHeight; 
+                    }, 100);
+                }
             });
         });
 
-        const openModal = (id) => document.getElementById(id).classList.remove('hidden');
-        const closeModal = () => document.querySelectorAll('[id^="modal-"]').forEach(m => m.classList.add('hidden'));
-        document.querySelectorAll('.close-modal').forEach(btn => btn.addEventListener('click', closeModal));
+        backBtn.addEventListener('click', () => {
+            document.querySelector('[data-target="screen-more"]').click();
+        });
+
+        const openModal = (id) => { 
+            document.getElementById(id).classList.remove('hidden'); 
+        }
+        
+        const closeModal = () => {
+            document.querySelectorAll('[id^="modal-"]').forEach(m => { 
+                m.classList.add('hidden'); 
+                const form = m.querySelector('form');
+                if(form) form.reset(); 
+            });
+            const inviteContainer = document.getElementById('new-invite-code-container');
+            if(inviteContainer) inviteContainer.classList.add('hidden');
+        };
+        
+        document.querySelectorAll('.close-modal').forEach(b => {
+            b.addEventListener('click', closeModal);
+        });
 
         document.getElementById('fab-notice').addEventListener('click', () => openModal('modal-notice'));
-        document.getElementById('fab-event').addEventListener('click', () => openModal('modal-event'));
-        document.getElementById('fab-minute').addEventListener('click', () => {
-            document.getElementById('min-date').value = new Date().toISOString().split('T')[0];
-            openModal('modal-minute');
+        document.getElementById('fab-event').addEventListener('click', () => { 
+            document.getElementById('event-date').value = ""; 
+            openModal('modal-event'); 
+        });
+        document.getElementById('fab-minute').addEventListener('click', () => { 
+            document.getElementById('min-id').value = ""; 
+            document.getElementById('min-date').value = "";
+            document.querySelectorAll('.att-checkbox').forEach(cb => cb.checked = false);
+            openModal('modal-minute'); 
+        });
+        document.getElementById('fab-finance').addEventListener('click', () => { 
+            document.getElementById('fin-date').value = ""; 
+            openModal('modal-finance'); 
+        });
+        document.getElementById('btn-edit-fund').addEventListener('click', () => { 
+            document.getElementById('input-initial-fund').value = initialFundAmount; 
+            openModal('modal-initial-fund'); 
         });
 
-        // ==========================================
-        // FETCH REALTIME DATA
-        // ==========================================
-        function fetchRealtimeData() {
+        function checkAuth() {
+            if (currentUser) {
+                document.getElementById('login-view').classList.add('hidden');
+                document.getElementById('app-view').classList.remove('hidden'); 
+                document.getElementById('app-view').classList.add('flex');
+                
+                updateProfileUI(); 
+                document.querySelectorAll('.sachiv-only').forEach(el => {
+                    if(isSachiv()) el.classList.remove('hidden');
+                    else el.classList.add('hidden');
+                });
+                
+                if (!isRealtimeDataFetched) { 
+                    fetchRealtimeData(); 
+                    isRealtimeDataFetched = true; 
+                }
+            }
+        }
+
+        function updateProfileUI() {
+            if(!currentUser) return;
+            document.getElementById('user-badge').textContent = currentUser.role;
+            document.getElementById('profile-name').textContent = currentUser.name;
+            document.getElementById('profile-role').textContent = currentUser.role;
             
-            // A. NOTICES (With Image Support)
-            onValue(ref(db, 'notices'), (snapshot) => {
-                const list = document.getElementById('notices-list');
-                list.innerHTML = "";
-                const data = snapshot.val();
-                if (data) {
-                    let notices = Object.keys(data).map(key => ({ id: key, ...data[key] }));
-                    notices.sort((a, b) => (b.pinned - a.pinned) || (b.timestamp - a.timestamp)); 
-                    notices.forEach((n, idx) => {
-                        list.innerHTML += `
-                        <div class="bg-white rounded-3xl shadow-sm border ${n.pinned ? 'border-rose-200 shadow-[0_5px_15px_rgba(225,29,72,0.08)]' : 'border-slate-100'} overflow-hidden list-enter" style="animation-delay: ${idx * 0.05}s">
-                            ${n.image ? `<img src="${n.image}" alt="Notice Image" class="w-full h-48 object-cover border-b border-slate-100" onerror="this.style.display='none'">` : ''}
-                            <div class="p-5 relative">
-                                ${n.pinned ? '<span class="absolute top-5 right-5 text-[10px] font-black bg-rose-50 text-rose-600 px-2.5 py-1 rounded-md uppercase tracking-widest flex items-center gap-1"><i class="fa-solid fa-thumbtack"></i> जरुरी</span>' : ''}
-                                <h3 class="font-black text-xl text-slate-900 w-[80%] leading-tight mb-2">${n.title}</h3>
-                                <div class="flex items-center gap-2 text-[11px] text-slate-500 font-bold mb-3">
-                                    <span class="bg-slate-100 px-2 py-1 rounded-md"><i class="fa-regular fa-calendar-days text-slate-400 mr-1"></i> ${formatDate(n.date)}</span>
-                                    <span class="bg-slate-100 px-2 py-1 rounded-md"><i class="fa-solid fa-user-pen text-slate-400 mr-1"></i> ${n.author}</span>
-                                </div>
-                                <p class="text-sm text-slate-600 whitespace-pre-wrap leading-relaxed font-medium">${n.content}</p>
-                                ${isSachiv() ? `
-                                <div class="mt-4 pt-4 border-t border-slate-100 flex justify-end">
-                                    <button data-type="notices" data-id="${n.id}" class="delete-btn text-red-500 text-xs font-bold bg-red-50 hover:bg-red-100 px-3 py-2 rounded-xl transition-colors flex items-center gap-1"><i class="fa-regular fa-trash-can"></i> मेटाउनुहोस्</button>
-                                </div>` : ''}
-                            </div>
-                        </div>`;
-                    });
+            if(currentUser.profilePic) {
+                document.getElementById('my-profile-img').src = currentUser.profilePic;
+                document.getElementById('my-profile-img').classList.remove('hidden');
+                document.getElementById('profile-avatar-fallback').classList.add('hidden');
+            } else {
+                document.getElementById('profile-avatar-fallback').textContent = currentUser.name.charAt(0);
+                document.getElementById('my-profile-img').classList.add('hidden');
+                document.getElementById('profile-avatar-fallback').classList.remove('hidden');
+            }
+        }
+
+        document.getElementById('login-btn').addEventListener('click', async () => {
+            const name = document.getElementById('auth-name').value.trim(); 
+            const code = document.getElementById('auth-code').value.trim().toUpperCase();
+            
+            if (!name || !code) return showToast("नाम र कोड हाल्नुहोस्", "error");
+            
+            const btn = document.getElementById('login-btn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> जाँच्दै...';
+            
+            try {
+                if (code === MASTER_CODE) {
+                    const ud = { name, role: 'सचिव', code }; 
+                    await set(ref(db, 'users/'+code), ud);
+                    localStorage.setItem('clubUser', JSON.stringify(ud)); 
+                    currentUser = ud; 
+                    checkAuth(); 
+                    showToast("सचिवको रूपमा स्वागत छ!");
+                    return;
+                }
+                const snap = await get(ref(db, 'users/'+code));
+                if (snap.exists()) {
+                    let existingUser = snap.val();
+                    if (existingUser.name !== name) {
+                        existingUser.name = name; 
+                        await update(ref(db, 'users/'+code), { name: name }); 
+                    }
+                    localStorage.setItem('clubUser', JSON.stringify(existingUser)); 
+                    currentUser = existingUser; 
+                    checkAuth(); 
+                    showToast("क्लबमा स्वागत छ!");
                 } else {
-                    list.innerHTML = '<div class="text-center py-20 opacity-50"><i class="fa-regular fa-folder-open text-5xl mb-3 text-slate-300"></i><p class="font-bold">कुनै सूचना छैन</p></div>';
+                    const inviteSnap = await get(ref(db, 'invites/'+code));
+                    if (inviteSnap.exists()) {
+                        const ud = { name, role: inviteSnap.val().role, code };
+                        await set(ref(db, 'users/'+code), ud); 
+                        await remove(ref(db, 'invites/'+code));
+                        localStorage.setItem('clubUser', JSON.stringify(ud)); 
+                        currentUser = ud; 
+                        checkAuth(); 
+                        showToast("क्लबमा स्वागत छ!");
+                    } else { 
+                        showToast("इनभाइट कोड गलत छ", "error"); 
+                    }
                 }
-            });
+            } catch (e) { 
+                showToast("इन्टरनेट समस्या आयो", "error"); 
+            } finally { 
+                btn.innerHTML = originalText; 
+            }
+        });
 
-            // B. EVENTS
-            onValue(ref(db, 'events'), (snapshot) => {
-                const list = document.getElementById('events-list');
-                list.innerHTML = "";
-                const data = snapshot.val();
-                const statusMap = {
-                    'pending': { text: 'बाँकी छ', icon: 'fa-clock', color: 'text-orange-600', bg: 'bg-orange-50', border: 'border-orange-200' },
-                    'in-progress': { text: 'हुँदैछ', icon: 'fa-spinner fa-spin', color: 'text-blue-600', bg: 'bg-blue-50', border: 'border-blue-200' },
-                    'completed': { text: 'सम्पन्न', icon: 'fa-check-double', color: 'text-emerald-600', bg: 'bg-emerald-50', border: 'border-emerald-200' },
-                    'cancelled': { text: 'रद्द भयो', icon: 'fa-ban', color: 'text-rose-600', bg: 'bg-rose-50', border: 'border-rose-200' }
-                };
+        document.getElementById('logout-btn').addEventListener('click', () => { 
+            if(confirm('तपाईँ पक्का बाहिर निस्कन चाहनुहुन्छ?')) {
+                localStorage.removeItem('clubUser'); 
+                currentUser = null;
+                document.getElementById('app-view').classList.add('hidden'); 
+                document.getElementById('app-view').classList.remove('flex');
+                document.getElementById('login-view').classList.remove('hidden');
+                window.location.href = window.location.href.split('#')[0]; 
+            }
+        });
 
-                if (data) {
-                    let events = Object.keys(data).map(key => ({ id: key, ...data[key] }));
-                    events.sort((a, b) => new Date(a.date) - new Date(b.date));
-                    events.forEach((e, idx) => {
-                        const sData = statusMap[e.status] || statusMap['pending'];
-                        const isDone = e.status === 'completed' || e.status === 'cancelled';
-                        list.innerHTML += `
-                        <div class="bg-white p-5 rounded-3xl shadow-sm border ${sData.border} list-enter" style="animation-delay: ${idx * 0.05}s">
-                            <div class="flex justify-between items-start mb-3 gap-2">
-                                <div class="flex-1">
-                                    <h3 class="font-black text-lg ${isDone ? 'text-slate-400 line-through' : 'text-slate-800'} leading-tight">${e.title}</h3>
-                                    <div class="flex items-center gap-2 mt-2 flex-wrap">
-                                        <p class="text-[10px] font-bold bg-slate-100 text-slate-600 px-2 py-1 rounded-md uppercase"><i class="fa-regular fa-calendar mr-1"></i> ${formatDate(e.date)}</p>
-                                        <p class="text-[10px] font-bold bg-indigo-50 text-indigo-700 px-2 py-1 rounded-md uppercase"><i class="fa-solid fa-user-tag mr-1"></i> ${e.assigned}</p>
-                                    </div>
-                                </div>
-                                <span class="${sData.bg} ${sData.color} border ${sData.border} px-2.5 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest shrink-0 shadow-sm flex items-center gap-1">
-                                    <i class="fa-solid ${sData.icon}"></i> ${sData.text}
-                                </span>
-                            </div>
-                            ${e.desc ? `<p class="text-sm text-slate-600 mt-3 bg-slate-50 p-3 rounded-xl border border-slate-100 font-medium">${e.desc}</p>` : ''}
-                            ${isSachiv() ? `
-                            <div class="mt-4 flex gap-2 border-t border-slate-100 pt-4 items-center">
-                                <select data-id="${e.id}" data-old="${e.title}" class="update-status-select flex-1 text-xs font-bold py-3 px-3 rounded-xl border border-slate-200 bg-slate-50 outline-none focus:ring-2 focus:ring-indigo-500 text-slate-700 cursor-pointer">
-                                    <option value="pending" ${e.status === 'pending' ? 'selected' : ''}>🟠 बाँकी छ (Pending)</option>
-                                    <option value="in-progress" ${e.status === 'in-progress' ? 'selected' : ''}>🔵 हुँदैछ (In Progress)</option>
-                                    <option value="completed" ${e.status === 'completed' ? 'selected' : ''}>🟢 सम्पन्न भयो (Completed)</option>
-                                    <option value="cancelled" ${e.status === 'cancelled' ? 'selected' : ''}>🔴 रद्द भयो (Cancelled)</option>
-                                </select>
-                                <button data-type="events" data-id="${e.id}" class="delete-btn w-12 h-11 flex items-center justify-center bg-white border border-rose-100 text-rose-500 rounded-xl hover:bg-rose-50 transition-colors shrink-0 shadow-sm"><i class="fa-regular fa-trash-can"></i></button>
-                            </div>` : ''}
-                        </div>`;
-                    });
-                }
-            });
+        function renderNotices(filterText = "") {
+            const list = document.getElementById('notices-list'); 
+            list.innerHTML = "";
+            let filtered = globalNotices.filter(n => 
+                n.title.toLowerCase().includes(filterText.toLowerCase()) || 
+                n.content.toLowerCase().includes(filterText.toLowerCase())
+            );
 
-            // C. MINUTES
-            onValue(ref(db, 'minutes'), (snapshot) => {
-                const list = document.getElementById('minutes-list');
-                list.innerHTML = "";
-                const data = snapshot.val();
-                if (data) {
-                    let minutes = Object.keys(data).map(key => ({ id: key, ...data[key] }));
-                    minutes.sort((a, b) => b.number - a.number); 
-                    minutes.forEach((m, idx) => {
-                        list.innerHTML += `
-                        <div class="bg-white p-5 rounded-3xl shadow-sm border border-slate-200 mb-4 relative overflow-hidden list-enter" style="animation-delay: ${idx * 0.05}s">
-                            <div class="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-indigo-500 to-purple-500"></div>
-                            <div class="flex justify-between items-end border-b border-slate-100 pb-3 mb-4">
-                                <div><p class="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">आधिकारिक रेकर्ड</p><h3 class="font-black text-2xl text-slate-800 leading-none">बैठक नं. <span class="text-indigo-600">${m.number}</span></h3></div>
-                                <span class="text-[11px] font-bold text-slate-500 bg-slate-100 px-2 py-1 rounded-md border border-slate-200">${formatDate(m.date)}</span>
-                            </div>
-                            <div class="mb-4">
-                                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 flex items-center gap-1"><i class="fa-solid fa-users text-slate-300"></i> उपस्थिति (${m.attendance ? m.attendance.length : 0} जना)</p>
-                                <p class="text-xs text-slate-700 leading-relaxed font-bold bg-slate-50 p-2 rounded-lg border border-slate-100">${m.attendance ? m.attendance.join(', ') : 'विवरण छैन'}</p>
-                            </div>
-                            <div class="mb-4">
-                                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 pl-1">प्रस्तावहरू</p>
-                                <p class="text-sm text-slate-800 whitespace-pre-wrap font-medium pl-3 border-l-2 border-indigo-200">${m.agenda}</p>
-                            </div>
-                            <div class="bg-indigo-50/50 p-4 rounded-2xl border border-indigo-50">
-                                <p class="text-[10px] font-bold text-indigo-500 uppercase tracking-widest mb-1.5 flex items-center gap-1"><i class="fa-solid fa-gavel text-indigo-300"></i> निर्णयहरू</p>
-                                <p class="text-sm text-slate-900 whitespace-pre-wrap font-bold">${m.decision}</p>
-                            </div>
-                            ${isSachiv() ? `<div class="mt-4 pt-3 text-right"><button data-type="minutes" data-id="${m.id}" class="delete-btn text-red-500 text-xs font-bold bg-red-50 hover:bg-red-100 px-3 py-2 rounded-xl transition-colors"><i class="fa-regular fa-trash-can mr-1"></i> रेकर्ड मेटाउनुहोस्</button></div>` : ''}
-                        </div>`;
-                    });
-                }
-            });
+            if(filtered.length === 0) { 
+                list.innerHTML = `
+                <div class="text-center p-10 text-slate-400 font-bold">
+                    <i class="fa-regular fa-folder-open text-4xl mb-3"></i><br>कुनै सूचना भेटिएन
+                </div>`; 
+                return; 
+            }
+            
+            filtered.forEach(n => {
+                const cmtsCount = n.comments ? Object.keys(n.comments).length : 0;
+                const seenCount = n.seenBy ? Object.keys(n.seenBy).length : 0;
 
-            // D. DIRECTORY & SEARCH
-            onValue(ref(db, 'users'), (snapshot) => {
-                const data = snapshot.val();
-                if (data) {
-                    allMembersData = Object.keys(data).map(key => data[key]);
-                    renderDirectory(allMembersData); // Call render function
-                }
-            });
-
-            // E. ACTIVITY LOG (History)
-            onValue(ref(db, 'activity_logs'), (snapshot) => {
-                const list = document.getElementById('activity-log-list');
-                list.innerHTML = "";
-                const data = snapshot.val();
-                if (data) {
-                    let logs = Object.keys(data).map(key => data[key]);
-                    logs.sort((a, b) => b.timestamp - a.timestamp); // Newest first
-                    logs = logs.slice(0, 30); // Keep only last 30 in UI
-                    
-                    logs.forEach(log => {
-                        const time = new Date(log.timestamp).toLocaleTimeString('ne-NP', {hour: '2-digit', minute:'2-digit'});
-                        const date = new Date(log.timestamp).toLocaleDateString('ne-NP', {month: 'short', day: 'numeric'});
-                        list.innerHTML += `
-                        <div class="flex gap-3 items-start border-b border-slate-50 pb-3 last:border-0 last:pb-0">
-                            <div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center shrink-0 mt-1">
-                                <i class="fa-solid fa-bolt text-indigo-400 text-xs"></i>
+                list.innerHTML += `
+                <div class="bg-white rounded-3xl shadow-sm border ${n.pinned ? 'border-rose-300 ring-4 ring-rose-50' : 'border-slate-200'} overflow-hidden fade-in transition-all">
+                    ${n.image ? `<img src="${n.image}" class="w-full h-48 object-cover" onerror="this.style.display='none'">` : ''}
+                    <div class="p-6">
+                        ${n.pinned ? '<span class="text-[10px] font-black bg-gradient-to-r from-rose-500 to-red-600 text-white px-3 py-1 rounded-full mb-3 inline-flex items-center shadow-md"><i class="fa-solid fa-thumbtack mr-1"></i> जरुरी</span>' : ''}
+                        <h3 class="font-black text-2xl mb-1 text-slate-800 tracking-tight">${n.title}</h3>
+                        <p class="text-[11px] text-slate-400 font-bold mb-4 uppercase tracking-wider">${n.date} • पोस्ट: ${n.author}</p>
+                        <p class="text-sm font-medium text-slate-600 leading-relaxed whitespace-pre-wrap">${linkify(n.content)}</p>
+                        
+                        <div class="mt-5 flex justify-between items-center border-t border-slate-100 pt-4 flex-wrap gap-2">
+                            <div class="flex gap-2">
+                                <button class="open-comments bg-indigo-50 hover:bg-indigo-100 text-indigo-600 px-4 py-2 rounded-xl text-xs font-extrabold transition-colors" data-id="${n.id}">
+                                    <i class="fa-regular fa-comments mr-1"></i> कमेन्ट (${cmtsCount})
+                                </button>
+                                ${isSachiv() ? `<button class="open-seen-by bg-slate-50 hover:bg-slate-100 text-slate-500 px-3 py-2 rounded-xl text-xs font-extrabold transition-colors" data-id="${n.id}"><i class="fa-solid fa-eye mr-1"></i> हेरेको (${seenCount})</button>` : ''}
                             </div>
-                            <div>
-                                <p class="text-sm font-bold text-slate-700 leading-tight">${log.action}</p>
-                                <p class="text-[10px] font-bold text-slate-400 mt-1">${log.user} (${log.role}) • ${date}, ${time}</p>
-                            </div>
-                        </div>`;
-                    });
-                } else {
-                    list.innerHTML = '<p class="text-center text-xs text-slate-400 font-bold py-4">कुनै गतिविधि छैन।</p>';
-                }
+                            ${isSachiv() ? `<button class="delete-btn w-9 h-9 bg-rose-50 text-rose-500 rounded-xl hover:bg-rose-100 transition-colors flex justify-center items-center" data-type="notices" data-id="${n.id}"><i class="fa-solid fa-trash-can"></i></button>` : ''}
+                        </div>
+                    </div>
+                </div>`;
             });
         }
 
-        // Render Directory Function (Supports Search)
-        function renderDirectory(membersArray) {
-            const list = document.getElementById('directory-list');
-            const attList = document.getElementById('attendance-list');
-            document.getElementById('total-members').textContent = membersArray.length;
-            
-            list.innerHTML = ""; 
-            if(isSachiv()) attList.innerHTML = "";
+        function renderEvents(filterText = "") {
+            const list = document.getElementById('events-list'); 
+            list.innerHTML = "";
+            let filtered = globalEvents.filter(e => 
+                e.title.toLowerCase().includes(filterText.toLowerCase()) || 
+                e.assigned.toLowerCase().includes(filterText.toLowerCase())
+            );
 
-            // Custom sorting logic
-            membersArray.sort((a, b) => {
-                const roles = ['अध्यक्ष', 'उपाध्यक्ष', 'सचिव', 'सह-सचिव', 'कोषाध्यक्ष', 'सल्लाहकार'];
-                const getRank = (r) => {
-                    let idx = roles.indexOf(r);
-                    if (idx !== -1) return idx;
-                    if (r === 'सदस्य') return 100; 
-                    return 50; // Custom roles get priority 50
-                };
-                return getRank(a.role) - getRank(b.role);
-            });
-
-            if (membersArray.length === 0) {
-                list.innerHTML = '<p class="text-center text-sm text-slate-400 py-4 font-bold">कुनै सदस्य भेटिएन।</p>';
+            if(filtered.length === 0) {
+                list.innerHTML = `
+                <div class="text-center p-10 text-slate-400 font-bold">
+                    <i class="fa-solid fa-list-check text-4xl mb-3"></i><br>कुनै कार्यक्रम भेटिएन
+                </div>`;
                 return;
             }
 
-            membersArray.forEach((m, idx) => {
-                const isTop = ['अध्यक्ष', 'उपाध्यक्ष', 'सचिव', 'सह-सचिव', 'कोषाध्यक्ष'].includes(m.role);
+            filtered.forEach(e => {
+                const isDone = e.status === 'completed'; 
+                const isCancel = e.status === 'cancelled'; 
+                const isInProg = e.status === 'in-progress';
+                
+                let statusColor = "bg-slate-100 text-slate-600";
+                if(isDone) statusColor = "bg-emerald-100 text-emerald-700"; 
+                if(isCancel) statusColor = "bg-rose-100 text-rose-700"; 
+                if(isInProg) statusColor = "bg-blue-100 text-blue-700";
+
                 list.innerHTML += `
-                <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between list-enter" style="animation-delay: ${idx * 0.03}s">
-                    <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 ${isTop ? 'bg-gradient-to-br from-indigo-500 to-purple-600 text-white shadow-md' : 'bg-slate-100 text-slate-500'} rounded-2xl flex items-center justify-center font-black text-xl transform -rotate-3">${m.name.charAt(0).toUpperCase()}</div>
+                <div class="bg-white p-5 rounded-3xl shadow-sm border border-slate-200 fade-in relative overflow-hidden">
+                    ${isDone ? `<div class="absolute top-0 right-0 w-16 h-16 bg-emerald-50 rounded-bl-full flex justify-center items-center"><i class="fa-solid fa-check text-emerald-300 text-xl ml-2 mb-2"></i></div>` : ''}
+                    <h3 class="font-black text-xl text-slate-800 ${isDone||isCancel ? 'line-through opacity-60':''}">${e.title}</h3>
+                    <div class="flex items-center gap-2 mt-2">
+                        <span class="text-[10px] font-extrabold px-2 py-1 rounded-lg ${statusColor}">${e.status.toUpperCase()}</span>
+                        <p class="text-xs font-bold text-indigo-600"><i class="fa-regular fa-calendar mr-1"></i> ${e.date}</p>
+                    </div>
+                    <p class="text-[11px] font-bold text-slate-500 mt-2"><i class="fa-solid fa-user-tag mr-1"></i> जिम्मेवारी: ${e.assigned}</p>
+                    ${e.desc ? `<p class="text-sm font-medium mt-3 bg-slate-50 p-3 rounded-2xl text-slate-600 border border-slate-100">${linkify(e.desc)}</p>`:''}
+                    ${isSachiv() ? `
+                    <div class="mt-4 flex gap-2 border-t border-slate-100 pt-4">
+                        <select data-id="${e.id}" class="update-status flex-1 text-xs font-extrabold p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-indigo-300">
+                            <option value="pending" ${e.status==='pending'?'selected':''}>बाँकी छ</option>
+                            <option value="in-progress" ${e.status==='in-progress'?'selected':''}>हुँदैछ</option>
+                            <option value="completed" ${e.status==='completed'?'selected':''}>सम्पन्न</option>
+                            <option value="cancelled" ${e.status==='cancelled'?'selected':''}>रद्द</option>
+                        </select>
+                        <button class="delete-btn w-11 bg-rose-50 text-rose-500 rounded-xl hover:bg-rose-100" data-type="events" data-id="${e.id}">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </div>`:''}
+                </div>`;
+            });
+        }
+
+        function renderMinutes(filterText = "") {
+            const list = document.getElementById('minutes-list'); 
+            list.innerHTML = "";
+            let filtered = globalMinutes.filter(m => 
+                m.agenda.toLowerCase().includes(filterText.toLowerCase()) || 
+                m.decision.toLowerCase().includes(filterText.toLowerCase()) ||
+                m.number.toString().includes(filterText)
+            );
+
+            if(filtered.length === 0) {
+                list.innerHTML = `
+                <div class="text-center p-10 text-slate-400 font-bold">
+                    <i class="fa-solid fa-file-signature text-4xl mb-3"></i><br>कुनै माइन्युट भेटिएन
+                </div>`;
+                return;
+            }
+
+            filtered.forEach(m => {
+                list.innerHTML += `
+                <div class="bg-white p-5 rounded-3xl shadow-sm border border-slate-200 mb-4 fade-in">
+                    <div class="flex justify-between items-start border-b border-slate-100 pb-3 mb-3">
                         <div>
-                            <h3 class="font-black text-slate-800 text-base">${m.name}</h3>
-                            <p class="text-[10px] font-bold px-2 py-0.5 rounded-md inline-block mt-1 uppercase tracking-wider ${isTop ? 'bg-indigo-50 text-indigo-700 border border-indigo-100' : 'bg-slate-50 text-slate-500 border border-slate-200'}">${m.role}</p>
+                            <h3 class="font-black text-xl text-slate-800">बैठक नं. ${m.number}</h3>
+                            <p class="text-xs font-bold text-slate-500 mt-1"><i class="fa-regular fa-calendar mr-1"></i> ${m.date}</p>
+                        </div>
+                        <div class="bg-purple-50 px-3 py-1.5 rounded-xl border border-purple-100 text-center">
+                            <p class="text-[10px] text-purple-600 font-extrabold uppercase">उपस्थिति</p>
+                            <p class="text-lg font-black text-purple-700 leading-none">${m.attendance ? m.attendance.length : 0}</p>
                         </div>
                     </div>
-                    ${isSachiv() && m.code !== currentUser.code ? `<button data-type="users" data-id="${m.code}" class="delete-btn w-10 h-10 flex items-center justify-center rounded-xl text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors"><i class="fa-solid fa-user-xmark"></i></button>` : ''}
+                    <div class="mb-3">
+                        <h4 class="text-xs font-extrabold text-slate-400 uppercase mb-1">प्रस्तावहरू</h4>
+                        <p class="text-sm font-medium text-slate-700 bg-slate-50 p-3 rounded-2xl whitespace-pre-wrap">${m.agenda}</p>
+                    </div>
+                    <div>
+                        <h4 class="text-xs font-extrabold text-slate-400 uppercase mb-1">निर्णयहरू</h4>
+                        <p class="text-sm font-medium text-slate-700 bg-emerald-50 p-3 rounded-2xl whitespace-pre-wrap border border-emerald-100">${m.decision}</p>
+                    </div>
+                    ${m.attendance && m.attendance.length > 0 ? `
+                    <div class="mt-3 bg-indigo-50/50 border border-indigo-100 p-3 rounded-2xl">
+                        <p class="text-[11px] font-bold text-indigo-700 leading-relaxed">
+                            <i class="fa-solid fa-users mr-1"></i> <span class="text-slate-500 font-medium">उपस्थित:</span> ${m.attendance.join(', ')}
+                        </p>
+                    </div>` : ''}
+                    ${isSachiv() ? `
+                    <div class="flex gap-2 mt-4">
+                        <button class="edit-minute-btn flex-1 bg-indigo-50 text-indigo-500 py-3 rounded-xl text-sm font-extrabold hover:bg-indigo-100 transition-colors" data-id="${m.id}" data-no="${m.number}" data-date="${m.date}" data-agenda="${m.agenda}" data-decision="${m.decision}" data-att="${m.attendance ? m.attendance.join(',') : ''}">
+                            <i class="fa-solid fa-pen mr-2"></i> सच्याउनुहोस्
+                        </button>
+                        <button class="delete-btn flex-1 bg-rose-50 text-rose-500 py-3 rounded-xl text-sm font-extrabold hover:bg-rose-100 transition-colors" data-type="minutes" data-id="${m.id}">
+                            <i class="fa-solid fa-trash-can mr-2"></i> मेटाउनुहोस्
+                        </button>
+                    </div>`:''}
                 </div>`;
+            });
+        }
+
+        document.getElementById('search-notices').addEventListener('input', (e) => renderNotices(e.target.value));
+        document.getElementById('search-events').addEventListener('input', (e) => renderEvents(e.target.value));
+        document.getElementById('search-minutes').addEventListener('input', (e) => renderMinutes(e.target.value));
+
+        function fetchRealtimeData() {
+            onValue(ref(db, 'notices'), (snap) => {
+                globalNotices = [];
+                if(snap.exists()){
+                    let notices = Object.keys(snap.val()).map(k => ({id:k, ...snap.val()[k]}));
+                    notices.sort((a,b) => (b.pinned - a.pinned) || (b.timestamp - a.timestamp));
+                    globalNotices = notices;
+
+                    if (currentUser && currentUser.code) {
+                        notices.forEach(n => {
+                            let hasSeen = n.seenBy && Object.values(n.seenBy).includes(currentUser.name);
+                            if (!hasSeen && !sessionSeen.has(n.id)) {
+                                sessionSeen.add(n.id);
+                                set(ref(db, `notices/${n.id}/seenBy/${currentUser.code}`), currentUser.name);
+                            }
+                        });
+                    }
+                }
+                renderNotices(document.getElementById('search-notices').value);
+            });
+
+            onValue(ref(db, 'events'), (snap) => {
+                globalEvents = [];
+                if(snap.exists()){
+                    let events = Object.keys(snap.val()).map(k => ({id:k, ...snap.val()[k]}));
+                    events.sort((a,b) => new Date(a.date) - new Date(b.date));
+                    globalEvents = events;
+                }
+                renderEvents(document.getElementById('search-events').value);
+            });
+
+            onValue(ref(db, 'minutes'), (snap) => {
+                globalMinutes = [];
+                if(snap.exists()){
+                    let minutes = Object.keys(snap.val()).map(k => ({id:k, ...snap.val()[k]}));
+                    minutes.sort((a,b) => b.number - a.number);
+                    globalMinutes = minutes;
+                }
+                renderMinutes(document.getElementById('search-minutes').value);
+            });
+
+            onValue(ref(db, 'settings/initial_fund'), (snap) => {
+                initialFundAmount = snap.exists() ? parseFloat(snap.val()) : 0;
+                calculateFinanceDashboard();
+            });
+
+            let globalIncome = 0; 
+            let globalExpense = 0;
+            onValue(ref(db, 'finances'), (snap) => {
+                const list = document.getElementById('finance-list'); 
+                list.innerHTML = "";
+                globalIncome = 0; 
+                globalExpense = 0;
+                if(snap.exists()){
+                    let fins = Object.keys(snap.val()).map(k => ({id:k, ...snap.val()[k]}));
+                    fins.sort((a,b) => b.timestamp - a.timestamp);
+                    fins.forEach(f => {
+                        const amt = parseFloat(f.amount); 
+                        const isInc = f.type === 'income';
+                        if(isInc) {
+                            globalIncome += amt; 
+                        } else {
+                            globalExpense += amt;
+                        }
+                        
+                        list.innerHTML += `
+                        <div class="p-4 border-b border-slate-100 last:border-0 hover:bg-slate-50 transition-colors">
+                            <div class="flex justify-between items-center mb-2">
+                                <h4 class="font-black text-sm text-slate-800">${f.topic}</h4>
+                                <span class="font-black text-lg ${isInc ? 'text-emerald-500' : 'text-rose-500'} bg-white px-2 rounded shadow-sm border border-slate-100">
+                                    ${isInc ? '+' : '-'} रु.${amt}
+                                </span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wide">${f.date} • ${f.author}</p>
+                                <div class="flex gap-2">
+                                    ${f.bill ? `<a href="${f.bill}" target="_blank" class="text-indigo-600 bg-indigo-50 px-2 py-1 rounded-md text-[10px] font-extrabold"><i class="fa-solid fa-receipt mr-1"></i> बिल</a>`:''} 
+                                    ${isSachiv() ? `<button class="delete-btn text-rose-500 bg-rose-50 px-2 py-1 rounded-md text-[10px] font-extrabold hover:bg-rose-100" data-type="finances" data-id="${f.id}"><i class="fa-solid fa-xmark"></i></button>`:''}
+                                </div>
+                            </div>
+                        </div>`;
+                    });
+                } else { 
+                    list.innerHTML = `<p class="text-center text-xs font-bold text-slate-400 py-6">कुनै कारोबार छैन</p>`; 
+                }
+                calculateFinanceDashboard();
+            });
+
+            function calculateFinanceDashboard() {
+                const netBalance = initialFundAmount + globalIncome - globalExpense;
+                document.getElementById('display-net-balance').textContent = netBalance.toLocaleString('en-IN');
+                document.getElementById('display-total-income').textContent = globalIncome.toLocaleString('en-IN');
+                document.getElementById('display-total-expense').textContent = globalExpense.toLocaleString('en-IN');
+            }
+
+            onValue(ref(db, 'chats'), (snap) => {
+                const list = document.getElementById('chat-list'); 
+                list.innerHTML = "";
+                if(snap.exists()){
+                    let chats = Object.keys(snap.val()).map(k => snap.val()[k]).slice(-100); 
+                    let lastAuthor = "";
+                    chats.forEach(c => {
+                        const isMe = c.author === currentUser.name; 
+                        const showName = !isMe && c.author !== lastAuthor;
+                        list.innerHTML += `
+                        <div class="flex flex-col ${isMe ? 'items-end' : 'items-start'} ${showName ? 'mt-3' : 'mt-1'} fade-in">
+                            ${showName ? `<span class="text-[10px] font-extrabold text-slate-400 ml-2 mb-1">${c.author}</span>` : ''}
+                            <div class="px-5 py-3 text-sm font-medium inline-block max-w-[80%] ${isMe ? 'chat-bubble-me' : 'chat-bubble-other'}">
+                                ${linkify(c.text)}
+                            </div>
+                        </div>`;
+                        lastAuthor = c.author;
+                    });
+                    list.scrollTop = list.scrollHeight;
+                }
+            });
+
+            onValue(ref(db, 'users'), (snap) => {
+                const list = document.getElementById('directory-list'); 
+                const attList = document.getElementById('attendance-list');
+                list.innerHTML = ""; 
+                if(isSachiv()) attList.innerHTML = "";
                 
-                // Only populate attendance once (ignore search filter for attendance box)
-                // Actually, doing it here means search filters attendance too. Let's keep it simple.
-                if(isSachiv()){
-                    attList.innerHTML += `
-                    <label class="flex items-center gap-3 border border-slate-200 p-3 rounded-xl bg-white cursor-pointer hover:bg-slate-50 transition-colors shadow-sm">
-                        <input type="checkbox" value="${m.name}" class="att-checkbox w-4 h-4 text-indigo-600 rounded border-slate-300">
-                        <span class="truncate font-bold text-slate-700 text-sm">${m.name}</span>
-                    </label>`;
+                if(snap.exists()){
+                    let rawData = snap.val(); 
+                    let members = []; 
+                    let seenCodes = new Set();
+                    
+                    for (let key in rawData) {
+                        let m = rawData[key]; 
+                        if (typeof m !== 'object' || m === null) continue;
+                        m.firebaseKey = key; 
+                        if (m.code) { 
+                            if (!seenCodes.has(m.code)) { 
+                                seenCodes.add(m.code); 
+                                members.push(m); 
+                            } else { 
+                                if (key !== m.code) remove(ref(db, `users/${key}`)); 
+                            } 
+                        }
+                    }
+                    
+                    if (currentUser && currentUser.code !== MASTER_CODE) {
+                        if (!members.find(m => m.code === currentUser.code)) { 
+                            document.getElementById('logout-btn').click(); 
+                            return; 
+                        }
+                    }
+                    
+                    if (currentUser) {
+                        const me = members.find(m => m.code === currentUser.code);
+                        if(me && JSON.stringify(me) !== JSON.stringify(currentUser)){ 
+                            localStorage.setItem('clubUser', JSON.stringify(me)); 
+                            currentUser = me; 
+                            updateProfileUI(); 
+                        }
+                    }
+                    
+                    members.sort((a,b) => { 
+                        const roles = ['अध्यक्ष','उपाध्यक्ष','सचिव','सह-सचिव','कोषाध्यक्ष','सदस्य','सल्लाहकार']; 
+                        return (roles.indexOf(a.role)===-1?100:roles.indexOf(a.role)) - (roles.indexOf(b.role)===-1?100:roles.indexOf(b.role)); 
+                    });
+                    
+                    members.forEach(m => {
+                        list.innerHTML += `
+                        <div class="bg-white p-4 rounded-3xl shadow-sm border border-slate-200 flex items-center gap-4 fade-in">
+                            ${m.profilePic ? `<img src="${m.profilePic}" class="w-14 h-14 rounded-2xl object-cover">` : `<div class="w-14 h-14 bg-gradient-to-br from-slate-100 to-slate-200 text-slate-500 font-black rounded-2xl flex justify-center items-center text-2xl">${m.name.charAt(0)}</div>`}
+                            <div class="flex-1">
+                                <h3 class="font-black text-base text-slate-800">${m.name}</h3>
+                                <span class="text-[10px] font-extrabold bg-indigo-50 text-indigo-600 px-2 py-0.5 rounded-md inline-block mb-1">${m.role}</span>
+                                ${m.phone ? `<p class="text-[11px] font-bold text-slate-500"><i class="fa-solid fa-phone w-4"></i> ${m.phone}</p>`:''}
+                                ${m.class ? `<p class="text-[11px] font-bold text-slate-500"><i class="fa-solid fa-location-dot w-4"></i> ${m.class}</p>`:''}
+                            </div>
+                            ${isSachiv() ? `
+                            <div class="flex flex-col gap-1 sm:flex-row sm:gap-2">
+                                <button class="edit-user-btn w-9 h-9 sm:w-10 sm:h-10 bg-slate-50 text-indigo-500 rounded-xl" data-name="${m.name}" data-code="${m.code}" data-key="${m.firebaseKey}" data-phone="${m.phone||''}" data-class="${m.class||''}" data-pic="${m.profilePic||''}">
+                                    <i class="fa-solid fa-pen"></i>
+                                </button>
+                                <button class="delete-user-btn w-9 h-9 sm:w-10 sm:h-10 bg-rose-50 text-rose-500 rounded-xl" data-code="${m.code}" data-key="${m.firebaseKey}">
+                                    <i class="fa-solid fa-trash-can"></i>
+                                </button>
+                            </div>`:''}
+                        </div>`;
+                        
+                        if(isSachiv()){ 
+                            attList.innerHTML += `
+                            <label class="flex items-center gap-2 p-2 bg-white rounded-xl border border-slate-200 cursor-pointer hover:bg-slate-50">
+                                <input type="checkbox" value="${m.name}" class="att-checkbox w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500">
+                                <span class="text-xs font-bold text-slate-700 truncate">${m.name}</span>
+                            </label>`; 
+                        }
+                    });
                 }
             });
         }
 
-        // Search Feature Listener
-        document.getElementById('search-member').addEventListener('input', (e) => {
-            const term = e.target.value.toLowerCase();
-            const filtered = allMembersData.filter(m => 
-                m.name.toLowerCase().includes(term) || m.role.toLowerCase().includes(term)
-            );
-            renderDirectory(filtered);
-        });
-
-        // ==========================================
-        // FORMS SUBMISSION (SACHIV ONLY)
-        // ==========================================
-        const guardSachiv = (e) => { if (!isSachiv()) { e.preventDefault(); showToast("अनुमति छैन।", "error"); return false; } return true; };
-
-        // 1. Notice Submit
-        document.getElementById('form-notice').addEventListener('submit', async (e) => {
-            e.preventDefault(); if(!guardSachiv(e)) return;
-            const btn = document.getElementById('btn-submit-notice'); btn.disabled = true;
-            
+        // ================= FORM SUBMISSIONS (WITH ONESIGNAL PUSH) =================
+        document.getElementById('form-notice').addEventListener('submit', async(e)=>{
+            e.preventDefault(); 
+            const btn = e.target.querySelector('button[type="submit"]'); 
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
             const title = document.getElementById('notice-title').value;
-            await push(ref(db, 'notices'), {
-                title: title,
-                content: document.getElementById('notice-content').value,
-                image: document.getElementById('notice-image').value, // NEW: Image URL
-                pinned: document.getElementById('notice-pinned').checked,
-                date: new Date().toISOString().split('T')[0],
-                author: currentUser.name, timestamp: Date.now()
-            });
             
-            await logActivity(`नयाँ सूचना: "${title}"`);
-            closeModal(); e.target.reset(); btn.disabled = false; showToast("सूचना प्रकाशित भयो।");
+            await push(ref(db, 'notices'), { 
+                title: title, 
+                image: document.getElementById('notice-image').value, 
+                content: document.getElementById('notice-content').value, 
+                pinned: document.getElementById('notice-pinned').checked, 
+                date: new Date().toISOString().split('T')[0], 
+                author: currentUser.name, 
+                timestamp: Date.now() 
+            }); 
+            
+            sendPushNotification("नयाँ सूचना: " + title, "नयाँ सूचना प्रकाशित भएको छ, कृपया एप खोलेर हेर्नुहोस्।");
+
+            closeModal(); 
+            showToast("सूचना प्रकाशित भयो"); 
+            btn.innerHTML = 'प्रकाशित गर्नुहोस्';
         });
 
-        // 2. Event Submit
-        document.getElementById('form-event').addEventListener('submit', async (e) => {
-            e.preventDefault(); if(!guardSachiv(e)) return;
-            const btn = document.getElementById('btn-submit-event'); btn.disabled = true;
-            
+        document.getElementById('form-event').addEventListener('submit', async(e)=>{
+            e.preventDefault(); 
             const title = document.getElementById('event-title').value;
-            await push(ref(db, 'events'), {
-                title: title,
-                date: document.getElementById('event-date').value,
-                assigned: document.getElementById('event-assigned').value,
-                status: document.getElementById('event-status-input').value,
-                desc: document.getElementById('event-desc').value,
-                author: currentUser.name, timestamp: Date.now()
-            });
+            await push(ref(db, 'events'), { 
+                title: title, 
+                date: document.getElementById('event-date').value, 
+                assigned: document.getElementById('event-assigned').value, 
+                status: document.getElementById('event-status-input').value, 
+                desc: document.getElementById('event-desc').value, 
+                author: currentUser.name, 
+                timestamp: Date.now() 
+            }); 
             
-            await logActivity(`नयाँ कार्यक्रम: "${title}"`);
-            closeModal(); e.target.reset(); btn.disabled = false; showToast("कार्यक्रम सुरक्षित भयो।");
+            sendPushNotification("नयाँ कार्यक्रम: " + title, "नयाँ कार्यक्रम तय भएको छ, एपमा विवरण हेर्नुहोस्।");
+            
+            closeModal(); 
+            showToast("कार्यक्रम सुरक्षित भयो");
         });
 
-        // 3. Minute Submit
-        document.getElementById('form-minute').addEventListener('submit', async (e) => {
-            e.preventDefault(); if(!guardSachiv(e)) return;
-            const btn = document.getElementById('btn-submit-minute'); btn.disabled = true;
+        document.getElementById('form-minute').addEventListener('submit', async(e)=>{
+            e.preventDefault(); 
+            const minId = document.getElementById('min-id').value; 
+            let att=[]; 
+            document.querySelectorAll('.att-checkbox:checked').forEach(c=>att.push(c.value));
             
-            let attendance = []; document.querySelectorAll('.att-checkbox:checked').forEach(cb => attendance.push(cb.value));
             const minNo = document.getElementById('min-number').value;
+            const minuteData = { 
+                number: parseInt(minNo), 
+                date: document.getElementById('min-date').value, 
+                agenda: document.getElementById('min-agenda').value, 
+                decision: document.getElementById('min-decision').value, 
+                attendance: att, 
+                author: currentUser.name, 
+                timestamp: Date.now() 
+            };
             
-            await push(ref(db, 'minutes'), {
-                number: parseInt(minNo),
-                date: document.getElementById('min-date').value,
-                agenda: document.getElementById('min-agenda').value,
-                decision: document.getElementById('min-decision').value,
-                attendance: attendance, author: currentUser.name, timestamp: Date.now()
-            });
-            
-            await logActivity(`माइन्युट रेकर्ड (बैठक नं. ${minNo})`);
-            closeModal(); e.target.reset(); document.querySelectorAll('.att-checkbox').forEach(cb => cb.checked = false);
-            btn.disabled = false; showToast("माइन्युट सुरक्षित भयो।");
+            if (minId) { 
+                await update(ref(db, `minutes/${minId}`), minuteData); 
+                showToast("माइन्युट अपडेट भयो"); 
+            } else { 
+                await push(ref(db, 'minutes'), minuteData); 
+                sendPushNotification("नयाँ माइन्युट रेकर्ड", "बैठक नं. " + minNo + " को माइन्युट एपमा राखिएको छ।");
+                showToast("नयाँ माइन्युट रेकर्ड भयो"); 
+            }
+            closeModal(); 
         });
 
-        // ==========================================
-        // GLOBAL CLICK & CHANGE LISTENERS
-        // ==========================================
+        document.getElementById('form-finance').addEventListener('submit', async(e)=>{
+            e.preventDefault(); 
+            await push(ref(db, 'finances'), { 
+                type: document.getElementById('fin-type').value, 
+                topic: document.getElementById('fin-topic').value, 
+                amount: document.getElementById('fin-amount').value, 
+                bill: document.getElementById('fin-bill').value, 
+                date: document.getElementById('fin-date').value, 
+                author: currentUser.name, 
+                timestamp: Date.now() 
+            }); 
+            closeModal(); 
+            showToast("आर्थिक कारोबार थपियो");
+        });
+
+        document.getElementById('form-initial-fund').addEventListener('submit', async(e) => { 
+            e.preventDefault(); 
+            await set(ref(db, 'settings/initial_fund'), document.getElementById('input-initial-fund').value); 
+            closeModal(); 
+            showToast("प्रारम्भिक कोष अपडेट भयो"); 
+        });
+
+        document.getElementById('form-chat').addEventListener('submit', async(e)=>{
+            e.preventDefault(); 
+            const i = document.getElementById('chat-input'); 
+            const t = i.value.trim();
+            if(t){ 
+                await push(ref(db, 'chats'), { 
+                    text: t, 
+                    author: currentUser.name, 
+                    timestamp: Date.now() 
+                }); 
+                i.value = ''; 
+            }
+        });
         
-        // Delete Records
-        document.addEventListener('click', async (e) => {
-            const delBtn = e.target.closest('.delete-btn');
-            if (delBtn && isSachiv()) {
-                if (confirm('तपाईं पक्का यो रेकर्ड मेटाउन चाहनुहुन्छ? यो फर्काउन मिल्दैन।')) {
-                    const type = delBtn.dataset.type;
-                    await remove(ref(db, `${type}/${delBtn.dataset.id}`));
-                    
-                    let logMsg = "रेकर्ड मेटाइयो";
-                    if(type === 'notices') logMsg = "एउटा सूचना मेटाइयो";
-                    if(type === 'events') logMsg = "एउटा कार्यक्रम मेटाइयो";
-                    if(type === 'minutes') logMsg = "एउटा माइन्युट मेटाइयो";
-                    if(type === 'users') logMsg = "एक जना सदस्य हटाइयो";
-                    
-                    await logActivity(logMsg);
-                    showToast("रेकर्ड मेटाइयो।");
+        document.getElementById('form-comment').addEventListener('submit', async(e)=>{
+            e.preventDefault(); 
+            const nid = document.getElementById('comment-notice-id').value; 
+            const t = document.getElementById('comment-text').value.trim();
+            if(t){ 
+                await push(ref(db, `notices/${nid}/comments`), { 
+                    text: t, 
+                    author: currentUser.name, 
+                    timestamp: Date.now() 
+                }); 
+                document.getElementById('comment-text').value=''; 
+                showToast("कमेन्ट थपियो"); 
+            }
+        });
+
+        document.getElementById('form-member-edit').addEventListener('submit', async(e)=>{
+            e.preventDefault(); 
+            const dbKey = document.getElementById('edit-member-code').value; 
+            await update(ref(db, `users/${dbKey}`), { 
+                name: document.getElementById('edit-member-name').value, 
+                phone: document.getElementById('edit-member-phone').value, 
+                class: document.getElementById('edit-member-class').value, 
+                profilePic: document.getElementById('edit-member-pic').value 
+            });
+            closeModal(); 
+            showToast("सदस्यको विवरण अपडेट भयो");
+        });
+
+        document.addEventListener('click', async(e)=>{
+            const d = e.target.closest('.delete-btn');
+            if(d && isSachiv()) { 
+                if(confirm('के तपाईँ यो डाटा पक्का मेटाउन चाहनुहुन्छ?')) { 
+                    await remove(ref(db, `${d.dataset.type}/${d.dataset.id}`)); 
+                    showToast("डाटा मेटाइयो"); 
+                } 
+            }
+
+            const delUser = e.target.closest('.delete-user-btn');
+            if(delUser && isSachiv()) {
+                const cToDel = delUser.dataset.code; 
+                const kToDel = delUser.dataset.key; 
+                
+                if(cToDel === MASTER_CODE) return showToast("मुख्य एडमिनलाई हटाउन मिल्दैन", "error"); 
+                if(cToDel === currentUser.code) return showToast("आफैलाई हटाउन मिल्दैन", "error");
+                
+                if(confirm('के तपाईँ यो सदस्यलाई पक्का हटाउन चाहनुहुन्छ?')) { 
+                    await remove(ref(db, `users/${kToDel}`)); 
+                    showToast("सदस्यलाई हटाइयो"); 
                 }
             }
-        });
+            
+            const ed = e.target.closest('.edit-user-btn');
+            if(ed && isSachiv()){
+                document.getElementById('edit-member-code').value = ed.dataset.key; 
+                document.getElementById('edit-member-name').value = ed.dataset.name; 
+                document.getElementById('edit-member-phone').value = ed.dataset.phone; 
+                document.getElementById('edit-member-class').value = ed.dataset.class; 
+                document.getElementById('edit-member-pic').value = ed.dataset.pic;
+                openModal('modal-member-edit');
+            }
 
-        // Update Event Status from Dropdown
-        document.addEventListener('change', async (e) => {
-            if (e.target.classList.contains('update-status-select') && isSachiv()) {
-                const id = e.target.dataset.id;
-                const title = e.target.dataset.old;
-                const val = e.target.value;
-                const valText = e.target.options[e.target.selectedIndex].text.split(' ')[1]; // extract text
+            const em = e.target.closest('.edit-minute-btn');
+            if(em && isSachiv()){
+                document.getElementById('min-id').value = em.dataset.id; 
+                document.getElementById('min-number').value = em.dataset.no; 
+                document.getElementById('min-date').value = em.dataset.date; 
+                document.getElementById('min-agenda').value = em.dataset.agenda; 
+                document.getElementById('min-decision').value = em.dataset.decision;
                 
-                await update(ref(db, `events/${id}`), { status: val });
-                await logActivity(`"${title}" को अवस्था -> ${valText}`);
-                showToast("अवस्था अपडेट भयो।");
+                const attArr = em.dataset.att ? em.dataset.att.split(',') : []; 
+                document.querySelectorAll('.att-checkbox').forEach(cb => { 
+                    cb.checked = attArr.includes(cb.value); 
+                });
+                
+                openModal('modal-minute');
+            }
+
+            const eye = e.target.closest('.open-seen-by');
+            if (eye && isSachiv()) {
+                const nid = eye.dataset.id;
+                const notice = globalNotices.find(n => n.id === nid);
+                const list = document.getElementById('seen-by-list');
+                list.innerHTML = "";
+                
+                if (notice && notice.seenBy) {
+                    Object.values(notice.seenBy).forEach(name => {
+                        list.innerHTML += `
+                        <div class="p-3 bg-slate-50 rounded-xl font-bold text-slate-700 mb-2 border border-slate-100 flex items-center gap-3">
+                            <div class="w-8 h-8 bg-indigo-100 text-indigo-500 rounded-full flex items-center justify-center text-sm">
+                                <i class="fa-solid fa-check"></i>
+                            </div> ${name}
+                        </div>`;
+                    });
+                } else {
+                    list.innerHTML = `<p class="text-sm font-bold text-slate-400 text-center py-6">अहिलेसम्म कसैले हेरेको छैन</p>`;
+                }
+                openModal('modal-seen-by');
+            }
+
+            const cmt = e.target.closest('.open-comments');
+            if(cmt){
+                const nid = cmt.dataset.id; 
+                document.getElementById('comment-notice-id').value = nid;
+                
+                onValue(ref(db, `notices/${nid}/comments`), (snap)=>{
+                    const cl = document.getElementById('comments-list'); 
+                    cl.innerHTML="";
+                    if(snap.exists()){
+                        let cmts = Object.keys(snap.val()).map(k=>snap.val()[k]).sort((a,b)=>a.timestamp-b.timestamp);
+                        cmts.forEach(c => { 
+                            cl.innerHTML += `
+                            <div class="bg-slate-50 p-3 rounded-2xl mb-2 border border-slate-100">
+                                <p class="text-[10px] font-extrabold text-indigo-600 mb-1">${c.author}</p>
+                                <p class="text-sm font-medium text-slate-700">${c.text}</p>
+                            </div>`; 
+                        });
+                        cl.scrollTop = cl.scrollHeight;
+                    } else { 
+                        cl.innerHTML = '<p class="text-sm text-center text-slate-400 font-bold mt-5">पहिलो कमेन्ट लेख्नुहोस्</p>'; 
+                    }
+                });
+                openModal('modal-comments');
             }
         });
 
-        // Generate Invite Code with Custom Role
-        const btnGenerate = document.getElementById('btn-generate-code');
-        if (btnGenerate) {
-            btnGenerate.addEventListener('click', async () => {
-                if (!isSachiv()) return;
-                
-                const roleInput = document.getElementById('invite-role').value.trim();
-                if (!roleInput) return showToast("कृपया पद लेख्नुहोस् वा छान्नुहोस्।", "error");
+        document.addEventListener('change', async(e)=>{
+            if(e.target.classList.contains('update-status') && isSachiv()) { 
+                await update(ref(db, `events/${e.target.dataset.id}`), {status: e.target.value}); 
+                showToast("कार्यक्रमको अवस्था फेरियो"); 
+            }
+        });
 
-                let newCode = ''; const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-                for(let i=0; i<6; i++) newCode += chars.charAt(Math.floor(Math.random() * chars.length));
-                
-                btnGenerate.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i>`;
-                await set(ref(db, `invites/${newCode}`), { role: roleInput, createdBy: currentUser.name, timestamp: Date.now() });
-                
-                document.getElementById('generated-code-display').classList.remove('hidden');
-                document.getElementById('new-invite-code').textContent = newCode;
-                btnGenerate.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles mr-1"></i> कोड बनाउनुहोस्`; 
-                
-                await logActivity(`नयाँ ${roleInput} को लागि कोड बनाइयो`);
-                showToast("कोड तयार भयो।", "success");
+        document.getElementById('btn-generate-code').addEventListener('click', async()=>{
+            if(!isSachiv()) return; 
+            const r = document.getElementById('invite-role').value; 
+            if(!r) return showToast('पहिला पद छान्नुहोस्', 'error');
+            
+            document.getElementById('btn-generate-code').innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+            let c=''; 
+            const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; 
+            for(let i=0;i<6;i++) c+=chars.charAt(Math.floor(Math.random()*chars.length));
+            
+            await set(ref(db, `invites/${c}`), {
+                role:r, 
+                createdBy:currentUser.name
             });
-        }
+            
+            document.getElementById('new-invite-code').textContent = c; 
+            document.getElementById('new-invite-code-container').classList.remove('hidden'); 
+            document.getElementById('btn-generate-code').innerHTML = 'कोड बनाउनुहोस्';
+        });
 
-        // Initialize Call
+        document.getElementById('new-invite-code-container').addEventListener('click', ()=>{ 
+            navigator.clipboard.writeText(document.getElementById('new-invite-code').textContent); 
+            showToast("कोड कपि भयो! अब पठाउनुहोस्।"); 
+        });
+
         checkAuth();
     </script>
 </body>
